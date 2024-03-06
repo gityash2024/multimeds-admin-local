@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#root {
+  /* font-family: sans-serif; */
+  font-family: 'Helvetica-Neue-Regular';
+  /* letter-spacing: -0.023rem; */
+  background-color: #F8FAFC;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: optimizeLegibility !important;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+
+/* Firefox */
+/* input[type=number] {
+-moz-appearance: textfield;
+} */
+
+@layer base {
+
+  @font-face {
+      font-family: "Helvetica-Neue-Thin";
+      /* font-weight: 200; */
+      src: url("/fonts/HelveticaNeueThin.otf");
+  }
+
+  @font-face {
+      font-family: "Helvetica-Neue-Light";
+      /* font-weight: 300; */
+      src: url("/fonts/HelveticaNeueLight.otf");
+  }
+
+  @font-face {
+      font-family: "Helvetica-Neue-Italic";
+      font-style: italic;
+      src: url("/fonts/HelveticaNeueItalic.ttf");
+  }
+
+  @font-face {
+      font-family: "Helvetica-Neue-Regular";
+      /* font-weight: 400; */
+      src: url("/fonts/HelveticaNeueRoman.otf");
+  }
+
+  @font-face {
+      font-family: "Helvetica-Neue-Medium";
+      /* line-height: "30px"; */
+      font-weight: 500;
+      src: url("/fonts/HelveticaNeueMedium.otf");
+  }
+
+  @font-face {
+      font-family: "Helvetica-Neue-Bold";
+      font-weight: 700;
+      src: url("/fonts/HelveticaNeueBold.otf");
+  }
+}
