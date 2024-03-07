@@ -4,7 +4,9 @@ import ArrowUp from "../assets/arrowUp.svg";
 import ArrowDown from "../assets/arrowDown.svg";
 import MedicinesCard from "./MedicinesCard";
 
-const InventoryBox = () => {
+const InventoryBox = (props) => {
+  const {segment,categories}=props;
+  console.log(segment,categories,'+++++++++++++======+++==++++=====+====++++')
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -12,7 +14,7 @@ const InventoryBox = () => {
       {/* heading */}
       <div className="border-b border-[#CBD5E1] flex justify-between py-2 items-center">
         <h1 className="text-2xl font-HelveticaNeueBold">
-          Prescription Medicines
+          {segment?.segmentName} ({categories?.length||0})
         </h1>
 
         <button className="outline-none bg-transparent" onClick={() => setIsOpen(!isOpen)}>
@@ -31,13 +33,13 @@ const InventoryBox = () => {
             {/* info */}
             <div className="flex gap-1 items-center">
               <h1 className="md:text-sm text-xs text-[#64748B]">
-                4 categories
+                {categories?.length||0} categories
               </h1>
 
               <div className="h-1.5 w-1.5 rounded-full bg-[#E2E8F0]" />
 
               <h2 className="md:text-sm text-xs text-[#64748B]">
-                899 products
+                {categories?.products?.length||0} products
               </h2>
             </div>
 
@@ -49,26 +51,18 @@ const InventoryBox = () => {
 
           {/* cards */}
           <div className="grid grid-cols-2 gap-4">
-            <MedicinesCard
-              title="Painkillers"
-              products={23}
-              manufacturers={12}
+          {categories?.map((item)=>{
+            return(
+
+              <MedicinesCard
+              title={item?.categoryName}
+              description={item?.categoryDescription}
+              products={item?.products?.length||0}
+              manufacturers={item?.manufacturers?.length||0}
             />
-            <MedicinesCard
-              title="Painkillers"
-              products={23}
-              manufacturers={12}
-            />
-            <MedicinesCard
-              title="Painkillers"
-              products={23}
-              manufacturers={12}
-            />
-            <MedicinesCard
-              title="Painkillers"
-              products={23}
-              manufacturers={12}
-            />
+            )
+          })  
+           }
           </div>
         </>
       )}

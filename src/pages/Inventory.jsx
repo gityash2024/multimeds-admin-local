@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { gql, useQuery, useMutation } from "@apollo/client";
+import {  toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import ArrowUp from "../assets/arrowUp.svg";
 import ArrowDown from "../assets/arrowDown.svg";
 import SearchIcon from "../assets/searchIcon.svg";
@@ -36,81 +38,164 @@ const sortByList = [
   { id: 26, name: "Z" },
 ];
 
+const GET_SEGMENTS = gql`
+  query GetSegments {
+    getSegments {
+      status
+      message
+      segments {
+        id
+        segmentName
+        totalProducts
+        totalCategories
+      }
+    }
+  }
+`;
+const GET_CATEGORIES = gql`
+query{getCategories{
+  status
+  message
+  categories{
+    id
+    categoryName
+    segmentId
+    categoryDescription
+    segment{
+      id
+      segmentName
+    }
+  }
+}}
+`;
+
+const CREATE_SEGMENT = gql`
+  mutation CreateSegment($segmentName: String!) {
+    createSegment(input: { segmentName: $segmentName }) {
+      status
+      message
+    }
+  }
+`;
+
 const Inventory = () => {
   const [sortBy, setSortBy] = useState("All");
-  // const [isOpen, setIsOpen] = useState(false);
-  const [isAddNewDropdown, setIsAddNewDropdown] = useState(false);
-  const [isAddSegment, setIsAddSegment] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [segmentName, setSegmentName] = useState("");
+  const { loading, error, data, refetch } = useQuery(GET_SEGMENTS);
+  const {  data:categoriesData, refetch:refetchCategories } = useQuery(GET_CATEGORIES);
+  const [createSegment] = useMutation(CREATE_SEGMENT);
+  const[isAddedSegment,setIsAddSegment]=useState(false);
+console.log(categoriesData?.getCategories?.categories,"categoriesData")
+  const handleAddSegment = async () => {
+    if (!segmentName) {
+      toast.error("Segment name is required");
+      return;
+    }
+
+    try {
+      await createSegment({ variables: { segmentName } });
+      refetch();
+      setSegmentName("");
+      setIsAddSegment(false);
+      toast.success("Segment added successfully!");
+    } catch (error) {
+      console.error("Error adding segment:", error);
+      toast.error("Error adding segment");
+    }
+  };
+
+  const filteredSegments = data?.getSegments?.segments?.filter((segment) => {
+    const startsWithAlphabet = sortBy === "All" || segment.segmentName.toLowerCase().startsWith(sortBy.toLowerCase());
+    const includesSearchText = segment.segmentName.toLowerCase().includes(searchText.toLowerCase());
+    return startsWithAlphabet && includesSearchText;
+  });
 
   return (
     <div className="w-full p-12 flex flex-col gap-12 bg-white">
-      {/* header */}
       <div className="flex flex-col gap-4">
-        {/* your inventory */}
         <div className="flex justify-between">
           <h1 className="text-2xl font-HelveticaNeueBold text-[#0F172A]">
             Your inventory
           </h1>
-
-          <div className="flex gap-4 ">
-            {/* searchbar */}
+          <div className="flex gap-4">
             <div className="flex items-center w-[19.625rem] rounded border border-[#CBD5E1] bg-white py-0.5 px-2">
               <div className="p-2 flex gap-1 items-center">
                 <img src={SearchIcon} alt="search icon" className="w-[24px]" />
-
                 <input
                   type="text"
                   placeholder="Search for Segments"
                   className="placeholder:text-[#94A3B8] text-[14px] focus:outline-none"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
                 />
               </div>
             </div>
-
-            {/* add button dropdown */}
-            <AddNewDropdown setIsAddSegment={setIsAddSegment} />
+            <button onClick={() => setSegmentName("")}>
+              <AddNewDropdown refetchCategories={refetchCategories} segments={data?.getSegments?.segments} refetchSegments={refetch} setIsAddSegment={setIsAddSegment} />
+            </button>
           </div>
         </div>
-
-        {/* sort by */}
         <div className="flex flex-col gap-2">
           <h1 className="text-xs">Sort by:</h1>
-
-          {/* list */}
           <div className="flex justify-between font-medium text-[#334155]">
-            {sortByList.map((item) => {
-              return (
-                <button
-                  className={sortBy === item.name && "text-[#7487FF]"}
-                  onClick={() => setSortBy(item.name)}
-                >
-                  {item.name}
-                </button>
-              );
-            })}
+            {sortByList.map((item) => (
+              <button
+                key={item.id}
+                className={sortBy === item.name && "text-[#7487FF]"}
+                onClick={() => setSortBy(item.name)}
+              >
+                {item.name}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* prescription medicines */}
-      <InventoryBox />
-      <InventoryBox />
-
-      {/* add segment */}
-      {isAddSegment && 
+      {/* Add Segment */}
+      {isAddedSegment && 
       <div className="flex justify-between items-center border-b border-[#CBD5E1] pb-[8px]">
-        <div className="flex gap-[8px] items-cente">
-          <input className="px-[16px] py-[8px] rounded-[4px] outline-none border-2 border-[#031B89] w-[337px]" type="text" placeholder="New segment name" />
-          <button className="text-[#7487FF] text-[14px] leading-[17.5px] font-HelvetiaNeueMedium" onClick={()=>setIsAddSegment(false)}>save</button>
+        <div className="flex gap-[8px] items-center">
+          <input
+            className="px-[16px] py-[8px] rounded-[4px] outline-none border-2 border-[#031B89] w-[337px]"
+            type="text"
+            placeholder="New segment name"
+            value={segmentName}
+            onChange={(e) => setSegmentName(e.target.value)}
+            required
+          />
+          <button
+            className="text-[#7487FF] text-[14px] leading-[17.5px] font-HelvetiaNeueMedium"
+            onClick={handleAddSegment}
+          >
+            Add Segment
+          </button>
         </div>
-        <button onClick={() => setIsOpen(!isOpen)}>
+        <button onClick={() => setIsAddSegment(false)}>
           <img
-            src={isAddSegment ? ArrowUp : ArrowDown}
-            alt="arrow up"
+            src={ArrowDown}
+            alt="arrow down"
             className="w-6 h-6"
-            onClick={()=>setIsAddSegment(false)}
           />
         </button>
-        </div>}
+      </div>
+      }
+
+      {/* Display Segments */}
+      {loading && <p>Loading...</p>}
+      {error && <p>Error: {error.message}</p>}
+      {!loading && !error && (
+        <div>
+          {filteredSegments.length === 0 ? (
+            <p>No segments found</p>
+          ) : (
+            filteredSegments.map((segment) => (
+              <InventoryBox key={segment.id} segment={segment} categories={categoriesData?.getCategories?.categories?.filter((category) => category?.segmentId === segment?.id)} />
+            ))
+          )}
+        </div>
+      )}
+
     </div>
   );
 };

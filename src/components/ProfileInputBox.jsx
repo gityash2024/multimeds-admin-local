@@ -72,7 +72,7 @@ const ProfileInputBox = ({
         )}
       </div>
         {isError  && (
-          <p className="text-[#EF4444] text-xs">{errorMsg}</p>
+          <p className="text-[#EF4444] text-xs text-left d-flex">{errorMsg}</p>
         )}
 
       {isDropdown && (

@@ -67,7 +67,7 @@ isNumber,
           </button>
         )}
       </div>
-        {isError &&<p className="text-[#EF4444] text-xs">{errorMsg}</p>}
+        {isError &&<p className="text-[#EF4444] text-xs text-left d-flex">{errorMsg}</p>}
 
       {isDropdown && (
         <ProfileInputDropdown

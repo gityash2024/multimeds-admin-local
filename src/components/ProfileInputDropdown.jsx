@@ -56,7 +56,7 @@ const DateDropdown = ({ setIsDropdown, inputButtonRef, setValue, dropdownList })
               setIsDropdown(false);
               setValue(item.name);
             }}
-            className="text-sm text-[#0F172A] rounded py-1 px-1.5 bg-white hover:bg-[#E0E7FF]"
+            className="text-sm text-[#0F172A] rounded py-1 px-1.5 bg-white hover:bg-[#E0E7FF] d-flex text-left"
           >
             {item.name}
           </h1>
