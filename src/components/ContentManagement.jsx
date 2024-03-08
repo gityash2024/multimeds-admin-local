@@ -76,7 +76,7 @@ const ContentManagement = ({ onSave }) => {
                   className="absolute top-0 right-0 p-1 bg-white rounded-full"
                   onClick={() => removePoint(index)}
                 >
-                  <DeleteForeverOutlined className="h-4 w-4 text-gray-500" />
+                 {index !== 0?<DeleteForeverOutlined className="h-4 w-4 text-gray-500" />:<></>}
                 </button>
               </Tab>
             ))}

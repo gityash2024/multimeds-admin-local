@@ -98,6 +98,20 @@ const AddNewProduct = () => {
       productName: productName,
       published: option === 1 ? true : false,
     };
+    if(!input?.productName || !input?.categoryId|| !input?.origin|| !input?.storage|| !input?.composition){
+      toast.error("Please fill all the required fields")
+      return
+    
+      
+    }
+    if(!input?.stocks?.length){
+      toast.error("Add min 1 Content , required")
+      return
+    }
+    if(!input?.points?.length){
+      toast.error("Add min 1 point , required")
+      return
+    }
    const response = await addProductToCategory({
       variables: {
         id: "5f27d574-e7c6-4ff3-a0ef-e5fa6efd1885",
@@ -414,7 +428,6 @@ console.log(response,"response")
             <div className="relative w-[14.125rem] h-[13.938rem] flex items-center justify-center bg-[#F1F5F9] rounded p-2">
               <img src={ImageIcon} alt="image icon" className="w-6 h-6" />
               <div className="absolute top-2 right-2 p-1 bg-white rounded">
-                <DeleteForeverOutlined className="w-6 h-6" />
               </div>
             </div>
           ) : (
