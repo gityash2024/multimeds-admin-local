@@ -15,11 +15,16 @@ const MedicinesCard = ({ title, products, manufacturers ,description}) => {
           
         </div>
 
-        <Link to="/home/category">
-          <button>
+        <Link >
+          <button style={{cursor:"not-allowed"}} title="comming soon">
             <img src={Dots} alt="dots" className="w-6 h-6" />
           </button>
         </Link>
+        {/* <Link to="/home/category">
+          <button>
+            <img src={Dots} alt="dots" className="w-6 h-6" />
+          </button>
+        </Link> */}
       </div>
 
       <p className="normal-case md:text-sm text-xs text-[#475569] font-HelveticaNeueItalic">

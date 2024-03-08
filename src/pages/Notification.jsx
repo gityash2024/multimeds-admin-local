@@ -71,7 +71,7 @@ export default function Notification() {
                         <p className='text-[12px] font-[400] leading-[15px]'>{item.timeStemp}</p>
                         <h1 className='text-[16px] font-[500] leading-[20px]'>{item.title}</h1>
                         <h2 className='text-[14px] font-[400] leading-[17.5px]'>{item.text}</h2>
-                        {item.title === 'Stock Expiry alert!' && <span className='cursor-pointer text-[#7487FF] text-[16px] font-[700] leading-[20px]' onClick={()=>{navigate('/home/temp-route')}}>Got to Product</span>}
+                        {item.title === 'Stock Expiry alert!' && <span className='cursor-pointer text-[#7487FF] text-[16px] font-[700] leading-[20px]' onClick={()=>{navigate('/home/product')}}>Got to Product</span>}
                     </div>
                 </div>
                 <button className='text-[24px]' onClick={()=>{setNotifications(notifications.filter(e=>e.id!==item.id))}}>&times;</button>

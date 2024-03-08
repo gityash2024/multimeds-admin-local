@@ -57,7 +57,7 @@ function App() {
         { path: "", element: <Dashboard /> },
         { path: "inventory", element: <Inventory />},
         { path: "add-product", element:<AddNewProduct />},
-        { path: "temp-route", element: <ProductPage />},
+        { path: "product", element: <ProductPage />},
         { path: "category", element: <CategoryPage />},
         { path: "edit_user", element: <EditUser /> },
         { path: "customers", element: <Customers /> },

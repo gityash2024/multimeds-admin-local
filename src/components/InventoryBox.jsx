@@ -33,13 +33,13 @@ const InventoryBox = (props) => {
             {/* info */}
             <div className="flex gap-1 items-center">
               <h1 className="md:text-sm text-xs text-[#64748B]">
-                {categories?.length||0} categories
+                {segment?.totalCategories||0} categories
               </h1>
 
               <div className="h-1.5 w-1.5 rounded-full bg-[#E2E8F0]" />
 
               <h2 className="md:text-sm text-xs text-[#64748B]">
-                {categories?.products?.length||0} products
+                {segment?.totalProducts||0} products
               </h2>
             </div>
 
@@ -57,8 +57,8 @@ const InventoryBox = (props) => {
               <MedicinesCard
               title={item?.categoryName}
               description={item?.categoryDescription}
-              products={item?.products?.length||0}
-              manufacturers={item?.manufacturers?.length||0}
+              products={item?.totalProducts||0}
+              manufacturers={item?.totalManufacturers||0}
             />
             )
           })  

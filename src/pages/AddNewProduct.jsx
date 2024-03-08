@@ -1,9 +1,8 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 import ProfileInput from "../components/ProfileInput";
 
 import WhiteDropdownArrow from "../assets/whiteDropdownArrow.svg";
-import DeleteIcon from "../assets/delete.svg";
 import Checkbox from "../components/Checkbox";
 import ToggleButton from "../components/ToggleButton";
 import SearchIcon from "../assets/searchIcon.svg";
@@ -16,83 +15,212 @@ import ContentManagement from "../components/ContentManagement";
 import PublishProductDropDown from "../components/PublishProductDropDown";
 import Context from "../context/AppContext";
 import AddNewStock from "../components/AddNewStock";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import ProductCard from "../components/ProductCard";
+import { ADD_PRODUCT_TO_CATEGORY, GET_COUPONS } from "../context/mutation";
+import { DeleteForever, DeleteForeverOutlined } from "@mui/icons-material";
+import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import {toast} from "react-toastify";
 
+const GET_CATEGORIES = gql`
+query{getCategories{
+  status
+  message
+  categories{
+    id
+    categoryName
+    segmentId
+    categoryDescription
+    segment{
+      id
+      segmentName
+    }
+  }
+}}
+`;
 
 const AddNewProduct = () => {
   const fileRef = useRef(null);
-  const [option, setOption] = useState(undefined);
+  const navigate = useNavigate();
+  const [option, setOption] = useState(1);
   const [newStockModal, setNewStockModal] = useState(undefined);
   const [sortBy, setSortBy] = useState("All");
-  const {productAddType} = useContext(Context);
+  const { productAddType } = useContext(Context);
+  const [stockData, setStockData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dataToUpdate, setdataToUpdate] = useState({});
+  const [coupons, setCoupons] = useState([]);
+  const [permission, setPermission] = useState(false);
+  const [addProductToCategory] = useMutation(ADD_PRODUCT_TO_CATEGORY);
+  const [productImages, setProductImages] = useState([]);
+  const [points, setPoints] = useState([]);
+  const { data, refetch: refetchCoupons } = useQuery(GET_COUPONS);
+  const [selectedCoupon, setSelectedCoupon] = useState("");
+  const [origin, setOrigin] = useState("");
+  const [storage, setStorage] = useState("");
+  const [composition, setComposition] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const[categories,setCategories]=useState([])
+  const {  data:categoriesData, refetch:refetchCategories } = useQuery(GET_CATEGORIES);
+  useEffect(()=>{
+    let data=[]
+    if(categoriesData){
+      // setCategories(categoriesData?.getCategories?.categories);
+      categoriesData?.getCategories?.categories?.map((category)=>{
+        data.push({name:category?.categoryName,id:category?.id})
+      })
+      setCategories(data)
+      console.log(data,"categoriesData")
+    }
 
+  },[categoriesData])
+
+  const [productName, setProductName] = useState("");
+    const [isChecked,setIsChecked] = useState(true);
+
+  useEffect(() => {
+    setCoupons(data?.getActiveCoupons?.coupons);
+  }, [data]);
+  // Function to handle adding a new product
+  const handleAddProduct = async() => {
+    // Prepare input data for the mutation
+    const input = {
+      points: points,
+      stocks: stockData,
+      productImages: productImages,
+      couponId: selectedCoupon,
+      origin: origin,
+      storage: storage,
+      composition: composition,
+      categoryId: categories?.filter((category)=>category.name===categoryId)[0]?.id,
+      prescriptionRequired: isChecked,
+      productName: productName,
+      published: option === 1 ? true : false,
+    };
+   const response = await addProductToCategory({
+      variables: {
+        id: "5f27d574-e7c6-4ff3-a0ef-e5fa6efd1885",
+        input: input,
+      },
+    })
+console.log(response,"response")
+    if(response.data?.addNewProductToCategory?.status){
+      toast.success(response.data?.addNewProductToCategory?.message)
+      navigate("/home/inventory")
+    }else{
+      toast.error(response.data?.addNewProductToCategory?.message)
+    }
+  };
+
+  const handleStockData = (data) => {
+    setStockData((prevStockData) => [...prevStockData, data]);
+  };
+
+  const removeManufacturer = (manufacturer) => {
+    setStockData((prevStockData) =>
+      prevStockData.filter((stock) => stock.manufacturer !== manufacturer)
+    );
+  };
+
+  useEffect(() => {
+    console.log(stockData);
+  }, [stockData]);
+
+  const updateStockData = (data) => {
+    setStockData((prevStockData) =>
+      prevStockData.map((stock) => {
+        if (stock.manufacturer === data.manufacturer) {
+          return data;
+        }
+        return stock;
+      })
+    );
+    setdataToUpdate({});
+  };
+
+  const filteredstockData = searchQuery?.trim()
+    ? stockData?.filter((user) =>
+        user.manufacturer?.toLowerCase()?.includes(searchQuery?.toLowerCase())
+      )
+    : stockData;
+
+  const handleFileUpload = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await fetch(
+        "http://api.mymultimeds.com/api/file/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`Failed to upload file: ${response.statusText}`);
+      }
+      const responseData = await response.json();
+      const uploadedUrl = responseData.publicUrl;
+      console.log(uploadedUrl, "uploaded url");
+      setProductImages((prevImages) => [...prevImages, uploadedUrl]);
+    } catch (error) {
+      console.error("Error uploading file:", error.message);
+    }
+  };
+
+  const removeProductImage = (image) => {
+    setProductImages((prevImages) => prevImages.filter((img) => img !== image));
+  };
+
+  useEffect(() => {
+    console.log(points);
+  }, [points]);
   return (
     <div className="w-full p-12 flex flex-col gap-12 bg-white">
-      {/* header */}
       <div className="flex flex-col gap-4">
-        {/* your inventory */}
         <div className="flex justify-between">
-          {/* heading */}
-          <div className="flex flex-col gap-1">
-            <h1 className="text-2xl font-HelveticaNeueBold text-[#0F172A]">
-              Dolonex DT
-            </h1>
+          <div className="flex flex-col gap-1"></div>
 
-            <h2 className="text-[#64748B] text-xs font-HelveticaNeueItalic">
-              Created by Sanjay R (You) on 09th December 2023
-            </h2>
-          </div>
-
-          {/* buttons */}
           <div className="flex gap-1 items-center h-12">
-            {/* <button className="flex justify-between py-3 px-4 w-[15.5rem] bg-[#031B89] rounded items-center h-full">
-              <h1 className=" font-HelveticaNeueMedium text-white">
-                Publish this product
-              </h1>
-              <img
-                src={WhiteDropdownArrow}
-                alt="dropdown arrow"
-                className="w-6 h-6"
-              />
-            </button> */}
-            {/* <div className="flex justify-between py-3 px-4 w-[15.5rem] bg-[#031B89] rounded items-center h-full">
-                <select className="font-HelveticaNeueMedium text-white bg-transparent outline-none h-full w-full">
-                  <option value="Publish this product">Publish this product</option>
-                  <option value="Add draft">Add draft</option>
-                </select>
-            </div> */}
-            <PublishProductDropDown setOption={setOption}/>
+            <button
+              onClick={() => handleAddProduct()}
+              className="text-sm font-HelveticaNeueMedium text-[#031B89] flex justify-between py-3 px-4 w-fit bg-white border border-[#031B89] rounded items-center h-full"
+            >
+              Add Product
+            </button>
+            <PublishProductDropDown setOption={setOption} option={option} />
 
             <button className="text-sm font-HelveticaNeueMedium text-[#031B89] flex justify-between py-3 px-4 w-fit bg-white border border-[#031B89] rounded items-center h-full">
               Archive this product
             </button>
 
             <button className="p-2">
-              <img src={DeleteIcon} alt="delete icon" className="w-6 h-6" />
+              <DeleteForever />
             </button>
           </div>
         </div>
       </div>
 
-      {/* general info */}
       <div className="flex flex-col gap-6">
         <h1 className="text-lg font-HelveticaNeueBold text-[#0F172A]">
           General Information
         </h1>
 
-        {/* inputs */}
         <div className="flex flex-col gap-3">
           <div className="grid grid-cols-2 gap-6 items-center">
             <ProfileInput
-              title="Product name"
-              // value="Dolonex DT"
-              important
-              big
-              wide
-            />
+                        title="Product Name"
+                        name="productName"
+                        value={productName}
+                        big
+                        wide
+                        setValue={(value) => setProductName( value)}
+                        // errorMsg={errors.productName}
+                        // isError={errors?.productName}
+                      />
 
-            {/* checkbox */}
             <div className="flex gap-2 items-center">
-              <Checkbox />
+              <Checkbox  setIsChecked={() => setIsChecked(!isChecked)} isChecked={isChecked} />
               <h1>Needs Prescription</h1>
             </div>
           </div>
@@ -100,42 +228,53 @@ const AddNewProduct = () => {
           <div className="flex gap-6">
             <ProfileInput
               title="Assign Product Category"
-              value="Painkillers"
-              important
+              value={categoryId}
+              setValue={(value) => setCategoryId(value)}
+              // isError={!!formErrors.dept}
+              // errorMsg={formErrors.dept}
               big
-              wide
               dropdownField
-              disabled
+              dropdownList={categories}
             />
-
+            
             <ProfileInput
-              title="Product Composition"
-              // value="Piroxicam (20mg)"
-              important
-              big
-              wide
-            />
+                        title="Product Composition"
+                        name="productComposition"
+                        value={composition}
+                        big
+                        wide
+                        setValue={(value) => setComposition( value)}
+                        // errorMsg={errors.productName}
+                        // isError={errors?.productName}
+                      />
           </div>
 
           <div className="flex gap-6">
             <ProfileInput
-              title="Storage Instructions?"
-              // value="PainkillersStore below 30C"
-              big
-              wide
-            />
-
+                        title="Storage Instructions?"
+                        name="storageInstructions"
+                        value={storage}
+                        big
+                        wide
+                        setValue={(value) => setStorage( value)}
+                        // errorMsg={errors.productName}
+                        // isError={errors?.productName}
+                      />
             <ProfileInput
-              title="Country of Origin"
-              // value="India"
-              big
-              wide
-            />
+                        title="Country of Origin"
+                        name="countryOfOrigin"
+                        value={origin}
+                        big
+                        wide
+                        setValue={(value) => setOrigin( value)}
+                        // errorMsg={errors.productName}
+                        // isError={errors?.productName}
+                      />
+
           </div>
         </div>
       </div>
 
-      {/* discount management */}
       <div className="flex flex-col gap-6">
         <h1 className="text-lg font-HelveticaNeueBold text-[#0F172A]">
           Discount Management
@@ -146,11 +285,44 @@ const AddNewProduct = () => {
             Enable Discount for Product
           </h1>
 
-          <ToggleButton />
+          <ToggleButton permission={permission} setPermission={setPermission} />
         </div>
       </div>
 
-      {/* stock management */}
+      {permission ? (
+        <div className="grid md:grid-cols-2 gap-[24px] mb-[24px]">
+          <div>
+            <p className="flex gap-[4px] text-[10px] font-[300] leading-[12.5px] italic mb-[4px]">
+              <p className="text-[#64748B] ">Select Discount coupon</p>
+              <span className="text-red-500">*</span>
+            </p>
+            <select className="outline-none text-[14px] font-[400] leading-[17.5px] border border-[#E2E8F0] p-[12px] rounded-sm w-full">
+              <option selected disabled>
+                Select Coupon
+              </option>
+              {coupons?.map((item) => (
+                <option value={item.id}>{item.code}</option>
+              ))}
+              {!coupons?.length && <option disabled>No coupon found</option>}
+            </select>
+          </div>
+          <div>
+            <p className="flex gap-[4px] text-[10px] font-[300] leading-[12.5px] italic mb-[4px]">
+              <p className="text-[#64748B] ">Discount Expiry</p>
+              <span className="text-red-500">*</span>
+            </p>
+            <input
+              className="outline-none text-[14px] font-[400] leading-[17.5px] border border-[#E2E8F0] p-[12px] rounded-sm w-full"
+              type="email"
+              placeholder="12/11/2023, 11:59 PM"
+              disabled
+            />
+          </div>
+        </div>
+      ) : (
+        <></>
+      )}
+
       <div className="flex flex-col gap-6">
         <div className="flex justify-between items-center">
           <h1 className="text-lg font-HelveticaNeueBold text-[#0F172A]">
@@ -158,7 +330,6 @@ const AddNewProduct = () => {
           </h1>
 
           <div className="flex gap-4 ">
-            {/* searchbar */}
             <div className="w-[19.625rem] rounded border border-[#CBD5E1] bg-white py-0.5 px-2">
               <div className="p-2 flex gap-2 items-center">
                 <img src={SearchIcon} alt="search icon" className="w-6 h-6" />
@@ -167,11 +338,16 @@ const AddNewProduct = () => {
                   type="text"
                   placeholder="Search for manufacturers"
                   className="placeholder:text-[#94A3B8] text-sm focus:outline-none"
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  value={searchQuery}
                 />
               </div>
             </div>
 
-            <button className="flex gap-2 items-center py-2 px-3 rounded border border-[#031B89] bg-white" onClick={()=>setNewStockModal(true)}>
+            <button
+              className="flex gap-2 items-center py-2 px-3 rounded border border-[#031B89] bg-white"
+              onClick={() => setNewStockModal(true)}
+            >
               <img src={MenuAddPlus} alt="plus" className="w-6 h-6" />
 
               <h1 className="text-sm font-HelveticaNeueMedium text-[#031B89]">
@@ -180,12 +356,30 @@ const AddNewProduct = () => {
             </button>
           </div>
         </div>
+        <div className="grid md:grid-cols-2 gap-[24px]">
+          {filteredstockData?.length ? (
+            stockData?.map((data) => {
+              return (
+                <ProductCard
+                  stockData={data}
+                  removeManufacturer={removeManufacturer}
+                  setStockDetails={setNewStockModal}
+                  setdataToUpdate={setdataToUpdate}
+                />
+              );
+            })
+          ) : (
+            <></>
+          )}
+        </div>
 
-        {/* no products */}
-        <Warning warning="No Products available" />
+        {!filteredstockData?.length ? (
+          <Warning warning="No Products available" />
+        ) : (
+          <></>
+        )}
       </div>
 
-      {/* product images */}
       <div className="flex flex-col gap-6">
         <div className="flex justify-between items-center">
           <div className="flex flex-col gap-1">
@@ -199,30 +393,70 @@ const AddNewProduct = () => {
             </h2>
           </div>
 
-          <button className="h-12 text-sm font-HelveticaNeueMedium text-[#031B89] flex gap-2 items-center py-2 px-3 rounded border border-[#031B89] bg-white" onClick={()=>{fileRef.current.click()}}>
+          <button
+            className="h-12 text-sm font-HelveticaNeueMedium text-[#031B89] flex gap-2 items-center py-2 px-3 rounded border border-[#031B89] bg-white"
+            onClick={() => {
+              fileRef.current.click();
+            }}
+          >
             Upload Product Images
           </button>
-          <input type="file" className="hidden" ref={fileRef} />
+          <input
+            type="file"
+            className="hidden"
+            onChange={(e) => handleFileUpload(e.target.files[0])}
+            ref={fileRef}
+          />
         </div>
 
         <div className="flex gap-4 items-center">
-          <div className="relative w-[14.125rem] h-[13.938rem] flex items-center justify-center bg-[#F1F5F9] rounded p-2">
-            <img src={ImageIcon} alt="image icon" className="w-6 h-6" />
-
-            <div className="absolute top-2 right-2 p-1 bg-white rounded">
+          {!productImages?.length ? (
+            <div className="relative w-[14.125rem] h-[13.938rem] flex items-center justify-center bg-[#F1F5F9] rounded p-2">
               <img src={ImageIcon} alt="image icon" className="w-6 h-6" />
+              <div className="absolute top-2 right-2 p-1 bg-white rounded">
+                <DeleteForeverOutlined className="w-6 h-6" />
+              </div>
             </div>
-          </div>
+          ) : (
+            <></>
+          )}
+          {productImages?.map((data) => {
+            return (
+              <div className="relative w-[14.125rem] h-[13.938rem] flex items-center justify-center bg-[#F1F5F9] rounded p-2">
+                <img src={data} alt="image icon" />
+                <div className="absolute top-2 right-2 p-1 bg-white rounded">
+                  <DeleteForeverOutlined
+                    onClick={() => {
+                      removeProductImage(data);
+                    }}
+                    className="w-6 h-6"
+                    style={{ cursor: "pointer" }}
+                  />
+                </div>
+              </div>
+            );
+          })}
 
-          <button className="rounded-full bg-[#7487FF] p-3 w-12 h-12" onClick={()=>{fileRef.current.click()}}>
+          <button
+            className="rounded-full bg-[#7487FF] p-3 w-12 h-12"
+            onClick={() => {
+              fileRef.current.click();
+            }}
+          >
             <img src={MenuAddPlusWhite} alt="plus" />
           </button>
         </div>
       </div>
 
-      {/* content management */}
-      <ContentManagement />
-      {newStockModal && <AddNewStock setNewStockModal={setNewStockModal}/> }
+      <ContentManagement onSave={(data) => setPoints(data)} />
+      {newStockModal && (
+        <AddNewStock
+          setNewStockModal={setNewStockModal}
+          updateStockData={updateStockData}
+          datatoUpdate={dataToUpdate}
+          stockData={handleStockData}
+        />
+      )}
     </div>
   );
 };

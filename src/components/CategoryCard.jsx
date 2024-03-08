@@ -8,7 +8,7 @@ export default function CategoryCard(props) {
     const { setProductAddType } = useContext(Context);
     function fun1(){
         if(props.type === 1) setProductAddType(1); else if(props.type === 2) setProductAddType(2); else setProductAddType(undefined);
-        navigate('/home/temp-route');
+        navigate('/home/product');
     }
   return (
     <div className={`flex flex-col justify-center items-center gap-[16px] w-full min-h-[170px] px-[24px] py-[16px] rounded-[8px] shadow-md border ${props.type===1 ? 'bg-[#F1F5F9] border-[#E2E8F0] border-dashed': props.type===2 ? 'bg-[#E2E8F0] border-[#94A3B8]':'bg-white border-[#E2E8F0]'}`} onClick={fun1}>

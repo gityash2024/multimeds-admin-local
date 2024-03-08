@@ -211,3 +211,11 @@ query{getUsers{
   }
 }}
 `
+export const ADD_PRODUCT_TO_CATEGORY = gql` 
+  mutation AddNewProductToCategory($id: ID!, $input: AddNewProductInput!) {
+    addNewProductToCategory(id: $id, input: $input) {
+      status
+      message
+    }
+  }
+`;

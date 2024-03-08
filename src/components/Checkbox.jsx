@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-
 import Checkmark from "../assets/checkmark.svg";
 
-const Checkbox = () => {
-  const [isChecked, setIsChecked] = useState(false);
+const Checkbox = ({ isChecked, setIsChecked }) => {
+  const toggleChecked = () => {
+    setIsChecked(!isChecked);
+  };
 
   return (
     <button
-      onClick={() => setIsChecked(!isChecked)}
+      onClick={toggleChecked}
       className={` ${
         isChecked
           ? "bg-[#031B89] border-[#031B89]"
