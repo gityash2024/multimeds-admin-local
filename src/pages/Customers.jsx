@@ -26,9 +26,10 @@ export default function Customers() {
     }, [data]);
 
     const handleSearch = (e) => {
-        const value = e.target.value.toLowerCase();
+        console.log(e.target.value);
+        const value = e?.target?.value?.toLowerCase();
         setSearchInput(value);
-        const filteredData = users.filter(user => user.fullName.toLowerCase().includes(value) || user.email.toLowerCase().includes(value) || (user.currentAddress && user.currentAddress.pincode.includes(value)));
+        const filteredData = users.filter(user => user.fullName?.toLowerCase().includes(value) || user?.email?.toLowerCase().includes(value) || (user.currentAddress && user.currentAddress.pincode.includes(value)));
         setFilteredUsers(filteredData);
     };
 
@@ -61,14 +62,14 @@ export default function Customers() {
                                     placeholder="Search By Name, email or pincode"
                                     className="placeholder:text-[#94A3B8] md:text-sm text-xs focus:outline-none w-full"
                                     value={searchInput}
-                                    onChange={handleSearch}
+                                    onChange={(e)=>handleSearch(e)}
                                 />
                             </div>
                         )}
                     </div>
                     {/* add user button */}
                     <Link
-                        to="/home/add-user"
+                        style={{cursor:"not-allowed"}}
                         className="md:text-base text-sm align-middle text-center md:w-[15.5rem] rounded md:py-3 py-2 px-4 bg-[#031B89] text-white"
                     >
                         {loading ? (
