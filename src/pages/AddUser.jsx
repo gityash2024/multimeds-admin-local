@@ -70,7 +70,7 @@ const AddUser = () => {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const response = await fetch("http://api.mymultimeds.com/api/file/upload", {
+      const response = await fetch("https://api.mymultimeds.com/api/file/upload", {
         method: "POST",
         body: formData,
       });
