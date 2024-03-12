@@ -47,6 +47,25 @@ query{getActiveCoupons{
 }}
 `;
 
+export const UPDATE_COUPON = gql`
+  mutation updateCoupon($id: ID!, $input: UpdateCouponInput!) {
+    updateCoupon(id: $id, input: $input) {
+      status
+      message
+    }
+  }
+`;
+
+
+export const DELETE_COUPONS = gql`
+  mutation deleteCoupon($id: ID!) {
+    deleteCoupon(id:  $id ) {
+      status
+      message
+    }
+  }
+`;
+
 export const ADD_DEPARTMENT = gql`
   mutation addDepartment($name: String!,$description: String!,$permissions: [String]!) {
     addDepartment(input: { name: $name, description: $description, permissions: $permissions }) {
@@ -156,8 +175,8 @@ export const UPDATE_USER=gql`
 `
 
 export const DELETE_USER=gql`
-  mutation deleteUser($userId: ID!) {
-    deleteUser(input: { userId: $userId }) {
+  mutation deleteUser($id: ID!) {
+    deleteUser(input:$id ) {
       status
       message
     }
@@ -174,7 +193,7 @@ export const UPDATE_DEPARTMENT=gql`
 ` 
 export const DELETE_DEPARTMENT=gql`
   mutation deleteDepartment($departmentId: ID!) {
-    deleteDepartment(input: { departmentId: $departmentId }) {
+    deleteDepartment(id:  $departmentId ) {
       status
       message
     }
@@ -219,3 +238,63 @@ export const ADD_PRODUCT_TO_CATEGORY = gql`
     }
   }
 `;
+
+export const UPDATE_PRODUCT=gql`
+mutation updateProductAdmin($id: ID!, $input: UpdateProductAdminInput!) {
+  updateProductAdmin(id: $id, input: $input) {
+    status
+    message
+  }
+}
+`
+
+export const GET_BANNERS=gql`
+query{getBanners{
+  status
+  message
+  banners{
+    id
+    url
+    mobileUrl
+    index
+  }
+}}
+`
+export const CREATE_BANNER=gql`
+  mutation createBanner($url: String!,$mobileUrl: String!,$index: Int!) {
+    createBanner(input: { url: $url, mobileUrl: $mobileUrl, index: $index}) {
+      status
+      message
+      banner{
+        id
+        url
+        mobileUrl
+        index
+      }
+    }
+  }
+`
+
+export const UPDATE_BANNER=gql`
+  mutation updateBanner($url: String!,$mobileUrl: String!,$index: Int!,$id: ID!) {
+    updateBanner(id: $id,input: { url: $url, mobileUrl: $mobileUrl, index: $index}) {
+      status
+      message
+      banner{
+        id
+        url
+        mobileUrl
+        index
+      }
+    }
+  }
+`
+
+export const DELETE_BANNER=gql`
+  mutation deleteBanner($id: ID!) {
+    deleteBanner(id: $id ) {
+      status
+      message
+    }
+  }
+`

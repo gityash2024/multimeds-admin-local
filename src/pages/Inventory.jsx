@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -7,6 +7,7 @@ import ArrowDown from "../assets/arrowDown.svg";
 import SearchIcon from "../assets/searchIcon.svg";
 import InventoryBox from "../components/InventoryBox";
 import AddNewDropdown from "../components/AddNewDropdown";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const sortByList = [
   { id: 0, name: "All" },
@@ -65,6 +66,19 @@ query{getCategories{
       id
       segmentName
     }
+    products{
+      id
+      productName
+      productImages
+      composition
+      sp
+      discount
+      manufacturer
+      maxRetailPrice
+
+    }
+    createdAt
+    updatedAt
   }
 }}
 `;
@@ -86,7 +100,8 @@ const Inventory = () => {
   const {  data:categoriesData, refetch:refetchCategories } = useQuery(GET_CATEGORIES);
   const [createSegment] = useMutation(CREATE_SEGMENT);
   const[isAddedSegment,setIsAddSegment]=useState(false);
-console.log(categoriesData?.getCategories?.categories,"categoriesData")
+console.log(categoriesData?.getCategories?.categories,"categoriesData");
+
   const handleAddSegment = async () => {
     if (!segmentName) {
       toast.error("Segment name is required");
@@ -110,6 +125,14 @@ console.log(categoriesData?.getCategories?.categories,"categoriesData")
     const includesSearchText = segment.segmentName.toLowerCase().includes(searchText.toLowerCase());
     return startsWithAlphabet && includesSearchText;
   });
+
+  useEffect(()=>{
+    if(localStorage.getItem("isCategoryDeleted")){
+      refetch();
+      refetchCategories();
+      localStorage.removeItem("isCategoryDeleted");
+    }
+  },[])
 
   return (
     <div className="w-full p-12 flex flex-col gap-12 bg-white">
@@ -190,7 +213,7 @@ console.log(categoriesData?.getCategories?.categories,"categoriesData")
             <p>No segments found</p>
           ) : (
             filteredSegments.map((segment) => (
-              <InventoryBox key={segment.id} segment={segment} categories={categoriesData?.getCategories?.categories?.filter((category) => category?.segmentId === segment?.id)} />
+              <InventoryBox key={segment.id} refetch={refetch} segment={segment} categories={categoriesData?.getCategories?.categories?.filter((category) => category?.segmentId === segment?.id)} />
             ))
           )}
         </div>

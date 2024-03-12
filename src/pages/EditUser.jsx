@@ -20,6 +20,7 @@ const EditUser = () => {
   const [phone, setPhone] = useState(tableData?.contactNumber || "");
   const [dept, setDept] = useState(tableData?.department?.name || "");
   const [jobTitle, setJobTitle] = useState(tableData?.role || "");
+  const [deleteUser] = useMutation(DELETE_USER);
   const [removePP, setRemovePP] = useState(false);
   const [isSaveModal, setIsSaveModal] = useState(false);
   const [formErrors, setFormErrors] = useState({
@@ -117,13 +118,14 @@ const EditUser = () => {
 
   const handleDeleteUser = () => {
     const formData = {
-      userId: tableData.id
+      id: tableData.id
     };
     deleteUser({ variables: formData })
     .then((response) => {
       const { status, message } = response.data.deleteUser;
       if (status === "SUCCESS") {
         toast.success("User deleted successfully.");
+        localStorage.setItem("isUserDeleted", true);
         navigate("/home/users");
       } else {
         toast.error(message);

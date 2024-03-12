@@ -4,8 +4,8 @@ import gototlast from "../assets/gotolast.svg";
 import MenuAddPlusWhite from "../assets/menu-add-plus-white.svg";
 import { Delete, DeleteForeverOutlined } from "@mui/icons-material";
 
-const ContentManagement = ({ onSave }) => {
-  const [points, setPoints] = useState([
+const ContentManagement = ({ onSave ,pointsProp}) => {
+  const [points, setPoints] = useState(pointsProp||[
     { point: "Point 1", description: "", author: "" },
   ]);
   const [isValid, setIsValid] = useState(false);

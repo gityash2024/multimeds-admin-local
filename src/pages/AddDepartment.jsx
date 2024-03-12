@@ -64,6 +64,7 @@ const AddDepartment = ({ notAdmin }) => {
         const { status, message } = response.data.addDepartment;
         if (status === "SUCCESS") {
           toast.success(dept+" Department added successfully.");
+          localStorage.setItem("isUserDeleted", true);
           navigate("/home/users");
         } else {
           toast.error("An error occurred while adding the department.");

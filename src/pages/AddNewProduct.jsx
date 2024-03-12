@@ -17,10 +17,10 @@ import Context from "../context/AppContext";
 import AddNewStock from "../components/AddNewStock";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import ProductCard from "../components/ProductCard";
-import { ADD_PRODUCT_TO_CATEGORY, GET_COUPONS } from "../context/mutation";
+import { ADD_PRODUCT_TO_CATEGORY,UPDATE_PRODUCT, GET_COUPONS } from "../context/mutation";
 import { DeleteForever, DeleteForeverOutlined } from "@mui/icons-material";
 import { Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {toast} from "react-toastify";
 
 const GET_CATEGORIES = gql`
@@ -36,32 +36,51 @@ query{getCategories{
       id
       segmentName
     }
+    products{
+      id
+      productName
+      productImages
+      composition
+      sp
+      discount
+      manufacturer
+      maxRetailPrice
+
+    }
+    createdAt
+    updatedAt
   }
 }}
 `;
 
 const AddNewProduct = () => {
   const fileRef = useRef(null);
+  const location=useLocation();
+  const category=location?.state?.category;
+  const productData=location?.state?.productData;
+console.log(productData,'productData')
   const navigate = useNavigate();
   const [option, setOption] = useState(1);
   const [newStockModal, setNewStockModal] = useState(undefined);
   const [sortBy, setSortBy] = useState("All");
   const { productAddType } = useContext(Context);
-  const [stockData, setStockData] = useState([]);
+  const [stockData, setStockData] = useState(productData?.stocks||[]);
   const [searchQuery, setSearchQuery] = useState("");
   const [dataToUpdate, setdataToUpdate] = useState({});
   const [coupons, setCoupons] = useState([]);
-  const [permission, setPermission] = useState(false);
+  const [permission, setPermission] = useState(productData?.discount||false);
   const [addProductToCategory] = useMutation(ADD_PRODUCT_TO_CATEGORY);
-  const [productImages, setProductImages] = useState([]);
-  const [points, setPoints] = useState([]);
+  const [updateProduct] = useMutation(UPDATE_PRODUCT);
+  const [productImages, setProductImages] = useState( productData?.productImages||[]);
+  const [points, setPoints] = useState(productData?.bulletPoints||[]);
   const { data, refetch: refetchCoupons } = useQuery(GET_COUPONS);
   const [selectedCoupon, setSelectedCoupon] = useState("");
-  const [origin, setOrigin] = useState("");
-  const [storage, setStorage] = useState("");
-  const [composition, setComposition] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const[categories,setCategories]=useState([])
+  const [origin, setOrigin] = useState(productData?.origin||"");
+  const [storage, setStorage] = useState(productData?.storage||"");
+  const [composition, setComposition] = useState(productData?.composition||"");
+  const [categoryId, setCategoryId] = useState(productData?.category?.categoryName||"");
+  const[categories,setCategories]=useState([]);
+  const [couponId, setCouponId] = useState("");
   const {  data:categoriesData, refetch:refetchCategories } = useQuery(GET_CATEGORIES);
   useEffect(()=>{
     let data=[]
@@ -76,8 +95,13 @@ const AddNewProduct = () => {
 
   },[categoriesData])
 
-  const [productName, setProductName] = useState("");
-    const [isChecked,setIsChecked] = useState(true);
+  useEffect(()=>{
+    console.log(category)
+    setCategoryId(category?.categoryName);
+  },[categories])
+
+  const [productName, setProductName] = useState(productData?.productName||"");
+    const [isChecked,setIsChecked] = useState(productData?.isPrescriptionNeeded||true);
 
   useEffect(() => {
     setCoupons(data?.getActiveCoupons?.coupons);
@@ -89,21 +113,22 @@ const AddNewProduct = () => {
       points: points,
       stocks: stockData,
       productImages: productImages,
-      couponId: selectedCoupon,
+      couponId: couponId,
       origin: origin,
       storage: storage,
       composition: composition,
-      categoryId: categories?.filter((category)=>category.name===categoryId)[0]?.id,
       prescriptionRequired: isChecked,
       productName: productName,
       published: option === 1 ? true : false,
+      // discount:coupons?.filter((coupon)=>coupon?.id===couponId)[0]?.percentage || 0
     };
-    if(!input?.productName || !input?.categoryId|| !input?.origin|| !input?.storage|| !input?.composition){
+    if(!input?.productName || !categoryId|| !input?.origin|| !input?.storage|| !input?.composition){
       toast.error("Please fill all the required fields")
       return
     
       
     }
+
     if(!input?.stocks?.length){
       toast.error("Add min 1 Content , required")
       return
@@ -112,18 +137,50 @@ const AddNewProduct = () => {
       toast.error("Add min 1 point , required")
       return
     }
-   const response = await addProductToCategory({
-      variables: {
-        id: "5f27d574-e7c6-4ff3-a0ef-e5fa6efd1885",
-        input: input,
-      },
-    })
-console.log(response,"response")
-    if(response.data?.addNewProductToCategory?.status){
-      toast.success(response.data?.addNewProductToCategory?.message)
-      navigate("/home/inventory")
+    if(!productData){
+
+      const response = await addProductToCategory({
+         variables: {
+           id:  categories?.filter((category)=>category.name===categoryId)[0]?.id,
+           input: input,
+         },
+       })
+   console.log(response,"response")
+       if(response.data?.addNewProductToCategory?.status){
+         toast.success(response.data?.addNewProductToCategory?.message)
+         localStorage.setItem("isCategoryDeleted",true)
+         navigate("/home/inventory")
+       }else{
+         toast.error(response.data?.addNewProductToCategory?.message)
+       }
     }else{
-      toast.error(response.data?.addNewProductToCategory?.message)
+      const input = {
+        points: points,
+        stocks: stockData,
+        productImages: productImages,
+        couponId: couponId,
+        origin: origin,
+        storage: storage,
+        composition: composition,
+        prescriptionRequired: isChecked,
+        productName: productName,
+        published: option === 1 ? true : false,
+        archived:option===1 ? false : true,
+        // discount:coupons?.filter((coupon)=>coupon?.id===couponId)[0]?.percentage || 0
+      };
+      const response = await updateProduct({
+        variables: {
+          id: productData?.id,
+          input: input,
+        },
+      })
+      if(response.data?.updateProductAdmin?.status){
+        toast.success(response.data?.updateProductAdmin?.message)
+        localStorage.setItem("isCategoryDeleted",true)
+        navigate("/home/inventory")
+      }else{
+        toast.error(response.data?.updateProductAdmin?.message)
+      }
     }
   };
 
@@ -131,6 +188,8 @@ console.log(response,"response")
     setStockData((prevStockData) => [...prevStockData, data]);
   };
 
+
+ 
   const removeManufacturer = (manufacturer) => {
     setStockData((prevStockData) =>
       prevStockData.filter((stock) => stock.manufacturer !== manufacturer)
@@ -187,8 +246,10 @@ console.log(response,"response")
   };
 
   useEffect(() => {
-    console.log(points);
-  }, [points]);
+    console.log(coupons);
+  }, [couponId]);
+
+
   return (
     <div className="w-full p-12 flex flex-col gap-12 bg-white">
       <div className="flex flex-col gap-4">
@@ -200,7 +261,7 @@ console.log(response,"response")
               onClick={() => handleAddProduct()}
               className="text-sm font-HelveticaNeueMedium text-[#031B89] flex justify-between py-3 px-4 w-fit bg-white border border-[#031B89] rounded items-center h-full"
             >
-              Add Product
+              {productData?"Update":"Add"} Product
             </button>
             <PublishProductDropDown setOption={setOption} option={option} />
 
@@ -208,9 +269,9 @@ console.log(response,"response")
               Archive this product
             </button>
 
-            <button className="p-2">
+            {/* <button className="p-2">
               <DeleteForever />
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
@@ -310,7 +371,7 @@ console.log(response,"response")
               <p className="text-[#64748B] ">Select Discount coupon</p>
               <span className="text-red-500">*</span>
             </p>
-            <select className="outline-none text-[14px] font-[400] leading-[17.5px] border border-[#E2E8F0] p-[12px] rounded-sm w-full">
+            <select onChange={(e) => setCouponId(e.target.value)} className="outline-none text-[14px] font-[400] leading-[17.5px] border border-[#E2E8F0] p-[12px] rounded-sm w-full">
               <option selected disabled>
                 Select Coupon
               </option>
@@ -320,7 +381,7 @@ console.log(response,"response")
               {!coupons?.length && <option disabled>No coupon found</option>}
             </select>
           </div>
-          <div>
+          {/* <div>
             <p className="flex gap-[4px] text-[10px] font-[300] leading-[12.5px] italic mb-[4px]">
               <p className="text-[#64748B] ">Discount Expiry</p>
               <span className="text-red-500">*</span>
@@ -331,7 +392,7 @@ console.log(response,"response")
               placeholder="12/11/2023, 11:59 PM"
               disabled
             />
-          </div>
+          </div> */}
         </div>
       ) : (
         <></>
@@ -461,7 +522,7 @@ console.log(response,"response")
         </div>
       </div>
 
-      <ContentManagement onSave={(data) => setPoints(data)} />
+      <ContentManagement onSave={(data) => setPoints(data)} pointsProp={points} />
       {newStockModal && (
         <AddNewStock
           setNewStockModal={setNewStockModal}

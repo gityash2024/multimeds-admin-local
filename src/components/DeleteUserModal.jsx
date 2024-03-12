@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 
-const SaveChangesModal = ({ setIsDeleteModal }) => {
+const SaveChangesModal = ({ setIsDeleteModal,handleDelete }) => {
   let pincodeModalRef = useRef();
 
   useEffect(() => {
@@ -33,7 +33,7 @@ const SaveChangesModal = ({ setIsDeleteModal }) => {
 
         <div className="flex gap-2">
           <button
-            onClick={() => setIsDeleteModal(false)}
+            onClick={() => handleDelete()}
             className="w-[7.5rem] py-2 px-4 rounded text-white bg-[#DC2626] text-sm font-HelveticaNeueMedium"
           >
             Delete

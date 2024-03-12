@@ -136,6 +136,7 @@ const AddUser = () => {
           const { status, message } = response.data.addUser;
           if (status === "SUCCESS") {
             toast.success("User added successfully.");
+            localStorage.setItem("isUserDeleted", true);
             navigate("/home/users");
           } else {
             toast.error(message);

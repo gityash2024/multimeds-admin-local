@@ -71,10 +71,18 @@ const SkeletonLoader = () => {
 const Users = () => {
   const [departments, setDepartments] = useState([]);
   const [departmentsUsers, setDepartmentsUsers] = useState([]);
-  const { data: addedDepartments } = useQuery(GET_ADDED_DEPARTMENTS);
+  const { data: addedDepartments,refetch } = useQuery(GET_ADDED_DEPARTMENTS);
   // const { data: departmentUsers } = useQuery(GET_DEPARTMENT_USER);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+
+  useEffect(()=>{
+    if(localStorage.getItem('isUserDeleted')){
+      console.log('refetching request received')
+      refetch();
+      localStorage.removeItem('isUserDeleted')
+    }
+  },[])
   useEffect(() => {
     if (addedDepartments) {
       const departmentsWithCounts = addedDepartments.getAddedDepartments?.departments.map(async (department) => {

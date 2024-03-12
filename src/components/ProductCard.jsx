@@ -5,9 +5,9 @@ import React, { useContext } from 'react'
 export default function ProductCard({setStockDetails,stockData,removeManufacturer,setdataToUpdate}) {
 
   return (
-    <div className='flex flex-col justify-between h-[159px] p-[16px] rounded-[8px] shadow-sm border border-[#DBEAFE]' onClick={()=>{setStockDetails(true); setdataToUpdate(stockData)}}>
+    <div className='flex flex-col justify-between h-[159px] p-[16px] rounded-[8px] shadow-sm border border-[#DBEAFE]' onClick={()=>{setdataToUpdate(stockData)}}>
         <div>
-            <div className='flex justify-between mb-[4px]'><h1 className='text-[#475569] text-[18px] leading-[22.5px] font-HelveticaNeueMedium'>{stockData?.manufacturer||"NA"}</h1><p>...</p></div>
+            <div className='flex justify-between mb-[4px]'><h1 className='text-[#475569] text-[18px] leading-[22.5px] font-HelveticaNeueMedium'>{stockData?.manufacturer||"NA"}</h1><p></p></div>
             <h2 className='text-[#64748B] text-[12px] leading-[17.5px] font-[400px] italic'></h2>
         </div>
       

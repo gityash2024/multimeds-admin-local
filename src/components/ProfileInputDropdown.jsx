@@ -42,7 +42,8 @@ const DateDropdown = ({ setIsDropdown, inputButtonRef, setValue, dropdownList })
             placeholder="Search for people"
             className="placeholder:text-[#94A3B8] text-sm focus:outline-none"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+
+            onChange={(e) =>{ setSearchTerm(e.target.value)}}
           />
         </div>
       </div>

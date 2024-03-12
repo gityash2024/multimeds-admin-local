@@ -168,13 +168,22 @@ export default function AddNewStock(props) {
         boxes:Number(boxes),
         sheets:Number(sheets),
         noOfTabletsPerSheet:Number(noOfTabletsPerSheet),
-       
+       stockType:type,
         mrpPerSheet:Number(mrpPerSheet),
         batchNumber,
         manufacturingDate,
         expiryDate,
+        noOfUnits:Number(units),
+        weightPerUnit:Number(unitWeight),
+        noOfGrams:Number(grams),
+        noOfKgs:Number(kgs),
+        boxMrp:Number(boxMrp),
+        groupNumber:1,
+
+
       };
       // const payload = {
+
       //   type,
       //   manufacturer,
       //   boxes:Number(boxes),

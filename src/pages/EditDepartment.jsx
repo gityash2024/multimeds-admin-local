@@ -112,6 +112,22 @@ setLoading(true)
     setLoading(false)
   };
 
+  const handleDelete = async() => {
+    return;
+    try {
+      const { data } = await client.query({
+        query: DELETE_DEPARTMENT,
+        variables: { input: departmentData?.id }
+      });
+      localStorage.setItem("isUserDeleted", true);
+      toast.success("Department deleted successfully.");
+      navigate("/home/users");
+    } catch (error) {
+      console.error('Error deleting department:', error);
+      toast.error("An error occurred while deleting the department.");
+    }
+  };
+
   return (
     <div className="w-full flex flex-col md:p-12 py-8 px-3 md:gap-12 gap-6 bg-white">
       {/* Header */}
@@ -139,7 +155,7 @@ setLoading(true)
 
           {!notAdmin && (
             <button
-              onClick={() => setIsDeleteModal(true)}
+              // onClick={() => setIsDeleteModal(true)}
               style={{cursor:"not-allowed"}}
               className="md:w-[10.75rem] w-full text-sm font-HelveticaNeueMedium bg-white text-[#EF4444] border border-[#EF4444] md:py-3 py-2 px-4 rounded"
             >
@@ -148,7 +164,7 @@ setLoading(true)
           )}
 
           {isDeleteModal && (
-            <DeleteUserModal setIsDeleteModal={setIsDeleteModal} />
+            <DeleteUserModal handleDelete={handleDelete} setIsDeleteModal={setIsDeleteModal} />
           )}
         </div>
       </div>
