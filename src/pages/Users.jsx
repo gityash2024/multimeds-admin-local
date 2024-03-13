@@ -74,7 +74,7 @@ const Users = () => {
   const { data: addedDepartments,refetch } = useQuery(GET_ADDED_DEPARTMENTS);
   // const { data: departmentUsers } = useQuery(GET_DEPARTMENT_USER);
   const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(()=>{
     if(localStorage.getItem('isUserDeleted')){
