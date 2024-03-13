@@ -137,6 +137,10 @@ console.log(productData,'productData')
       toast.error("Add min 1 point , required")
       return
     }
+    if(!input?.couponId){
+      toast.error("Select coupon , required")
+      return
+    }
     if(!productData){
 
       const response = await addProductToCategory({
@@ -146,7 +150,7 @@ console.log(productData,'productData')
          },
        })
    console.log(response,"response")
-       if(response.data?.addNewProductToCategory?.status){
+       if(response.data?.addNewProductToCategory?.status==="SUCCESS"){
          toast.success(response.data?.addNewProductToCategory?.message)
          localStorage.setItem("isCategoryDeleted",true)
          navigate("/home/inventory")
