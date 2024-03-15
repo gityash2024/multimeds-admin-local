@@ -8,6 +8,7 @@ import { ADD_DEPARTMENT_USER, GET_ADDED_DEPARTMENTS } from "../context/mutation"
 import {  useMutation, useQuery } from "@apollo/client";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import LoaderOverlay from "../components/loadinOverlay";
 const AddUser = () => {
   const navigate=useNavigate();
   const[departmentList,setDepartmentList]=useState([]);
@@ -23,6 +24,7 @@ const AddUser = () => {
   const [profilePictureUri, setProfilePictureUri] = useState(null);
   const [removePP, setRemovePP] = useState(false);
   const [isSaveModal, setIsSaveModal] = useState(false);
+  const [loading,setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState({
     name: "",
     email: "",
@@ -67,6 +69,8 @@ const AddUser = () => {
   };
 
   const handleFileUpload = async (file) => {
+    setLoading(true);
+
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -83,6 +87,8 @@ const AddUser = () => {
       setProfilePictureUri(responseData.publicUrl);
     } catch (error) {
       console.error("Error uploading file:", error.message);
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -131,18 +137,26 @@ const AddUser = () => {
         profilePicture: profilePictureUri,
       };
 
+      setLoading(true);
+
       addUser({ variables: formData })
         .then((response) => {
           const { status, message } = response.data.addUser;
           if (status === "SUCCESS") {
+             setLoading(false);
+
             toast.success("User added successfully.");
             localStorage.setItem("isUserDeleted", true);
             navigate("/home/users");
           } else {
+            setLoading(false);
+
             toast.error(message);
           }
         })
         .catch((error) => {
+          setLoading(false);
+
           toast.error(error.message);
         });
     }
@@ -286,6 +300,7 @@ const AddUser = () => {
         </button>
        
       </div>
+      {loading && <LoaderOverlay />}
     </div>
   );
 };

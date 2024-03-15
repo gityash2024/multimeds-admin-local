@@ -8,7 +8,7 @@ import SearchIcon from "../assets/searchIcon.svg";
 import InventoryBox from "../components/InventoryBox";
 import AddNewDropdown from "../components/AddNewDropdown";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import LoaderOverlay from "../components/loadinOverlay";
 const sortByList = [
   { id: 0, name: "All" },
   { id: 1, name: "A" },
@@ -94,29 +94,50 @@ const CREATE_SEGMENT = gql`
 
 const Inventory = () => {
   const [sortBy, setSortBy] = useState("All");
+  const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [segmentName, setSegmentName] = useState("");
-  const { loading, error, data, refetch } = useQuery(GET_SEGMENTS);
   const {  data:categoriesData, refetch:refetchCategories } = useQuery(GET_CATEGORIES);
-  const [createSegment] = useMutation(CREATE_SEGMENT);
   const[isAddedSegment,setIsAddSegment]=useState(false);
 console.log(categoriesData?.getCategories?.categories,"categoriesData");
 
+
+const { loading: segmentsLoading, error, data, refetch } = useQuery(GET_SEGMENTS);
+const [createSegment, { loading: createSegmentLoading }] = useMutation(CREATE_SEGMENT);
+
+const refetchCategoriesFunc=()=>{
+  setLoading(true);
+  refetchCategories();
+  
+}
+const refetchFunc=()=>{
+  setLoading(true);
+  refetch();
+}
+
+useEffect(()=>{
+  setLoading(false);
+  
+},[categoriesData,data])
   const handleAddSegment = async () => {
-    if (!segmentName) {
+    if (!segmentName?.trim()) {
+      setSegmentName("");
       toast.error("Segment name is required");
       return;
     }
 
+    setLoading(true);
     try {
       await createSegment({ variables: { segmentName } });
-      refetch();
+      await refetch();
       setSegmentName("");
       setIsAddSegment(false);
       toast.success("Segment added successfully!");
     } catch (error) {
       console.error("Error adding segment:", error);
       toast.error("Error adding segment");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -155,7 +176,7 @@ console.log(categoriesData?.getCategories?.categories,"categoriesData");
               </div>
             </div>
             <button onClick={() => setSegmentName("")}>
-              <AddNewDropdown refetchCategories={refetchCategories} segments={data?.getSegments?.segments} refetchSegments={refetch} setIsAddSegment={setIsAddSegment} />
+              <AddNewDropdown refetchCategories={refetchCategoriesFunc} segments={data?.getSegments?.segments} refetchSegments={refetchFunc} setIsAddSegment={setIsAddSegment} />
             </button>
           </div>
         </div>
@@ -188,7 +209,7 @@ console.log(categoriesData?.getCategories?.categories,"categoriesData");
             required
           />
           <button
-            className="text-[#7487FF] text-[14px] leading-[17.5px] font-HelvetiaNeueMedium"
+            className="text-[#7487FF] text-[14px] leading-[17.5px] font-HelvetiaNeueMedium cursor-pointer  w-[12.5rem] h-full rounded py-3 px-4 bg-[#031B89] text-white"
             onClick={handleAddSegment}
           >
             Add Segment
@@ -209,15 +230,17 @@ console.log(categoriesData?.getCategories?.categories,"categoriesData");
       {error && <p>Error: {error.message}</p>}
       {!loading && !error && (
         <div>
-          {filteredSegments.length === 0 ? (
-            <p>No segments found</p>
+          {filteredSegments?.length === 0 ? (
+            <p className="text-center">No segments found</p>
           ) : (
-            filteredSegments.map((segment) => (
+            filteredSegments?.map((segment) => (
               <InventoryBox key={segment.id} refetch={refetch} segment={segment} categories={categoriesData?.getCategories?.categories?.filter((category) => category?.segmentId === segment?.id)} />
             ))
           )}
         </div>
       )}
+      
+      {(loading||segmentsLoading) && <LoaderOverlay />}
 
     </div>
   );

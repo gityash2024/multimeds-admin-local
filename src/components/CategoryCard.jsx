@@ -1,9 +1,10 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import MedicineImage from '../assets/MedicineImage.png';
 import { useNavigate } from 'react-router-dom';
 import Context from '../context/AppContext';
 import { gql, useMutation,useQuery } from '@apollo/client';
 import { toast } from 'react-toastify';
+import LoaderOverlay from './loadinOverlay';
 const DELETE_PRODUCT=gql`
   mutation DeleteProduct($input: ID!) {
     deleteProduct(input: $input) {
@@ -34,17 +35,23 @@ export default function CategoryCard(props) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
       return date.toLocaleDateString('en-US', options);
   }
+  const [loading, setLoading]=useState(false);
   const handleDelete=()=>{
+    setLoading(true);
     deleteProduct({
       variables: {
         input: data?.id
       }
     }).then((res) => {
       if (res?.data?.deleteProduct?.status === "SUCCESS") {
-        toast.success("Product deleted successfully")
+        setLoading(false);
+        toast.success("Product deleted successfully");
+        localStorage.setItem("isCategoryDeleted", true);
         navigate('/home/inventory')
       } else {
+        setLoading(false);
         toast.error(
+
           res?.data?.deleteProduct?.message ||
             "An error occurred while deleting the product"
         );
@@ -99,6 +106,7 @@ export default function CategoryCard(props) {
             </div>
           </div>
         ))}
+        {loading&& <LoaderOverlay/>}
       </div>
     );
   

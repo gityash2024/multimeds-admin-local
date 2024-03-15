@@ -17,7 +17,7 @@ const MedicinesCard = ({ title, products, manufacturers ,description,category}) 
 
     
         <Link to="/home/category" state={{category:category}}>
-          <button>
+          <button className="w-6 h-6" title="View/Edit Category">
             <img src={Dots} alt="dots" className="w-6 h-6" />
           </button>
         </Link>

@@ -3,7 +3,7 @@ import { Tab } from "@headlessui/react";
 import gototlast from "../assets/gotolast.svg";
 import MenuAddPlusWhite from "../assets/menu-add-plus-white.svg";
 import { Delete, DeleteForeverOutlined } from "@mui/icons-material";
-
+import {toast} from 'react-toastify';
 const ContentManagement = ({ onSave ,pointsProp}) => {
   const [points, setPoints] = useState(pointsProp||[
     { point: "Point 1", description: "", author: "" },
@@ -20,6 +20,7 @@ const ContentManagement = ({ onSave ,pointsProp}) => {
 
   const handleSave = () => {
     if (isValid) {
+      toast.success("Points saved successfully");
       console.log(points);
       onSave(points);
     }

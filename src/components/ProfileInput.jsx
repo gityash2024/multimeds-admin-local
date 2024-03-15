@@ -43,9 +43,9 @@ isNumber,
         {title} {important && <span className="text-[#EF4444] font-HelveticaNeueBold">*</span>}
       </label>
 
-      <div className={`${borderClassName} ${big ? "h-[2.625rem]" : "h-[2.125rem]"} ${disabled && "bg-[#F1F5F9]"} flex justify-between border rounded p-3 gap-2 items-center`}>
+      <div onClick={() => {dropdownField?setIsDropdown(!isDropdown): null}} className={`${borderClassName} ${big ? "h-[2.625rem]" : "h-[2.125rem]"} ${disabled && "bg-[#F1F5F9]"} flex justify-between border rounded p-3 gap-2 items-center`}>
         <input
-          disabled={disabled}
+          readOnly={dropdownField}
           onFocus={() => {
             setIsActive(true);
           }}

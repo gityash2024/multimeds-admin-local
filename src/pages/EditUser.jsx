@@ -8,6 +8,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { GET_ADDED_DEPARTMENTS, UPDATE_USER,DELETE_USER } from "../context/mutation";
+import LoaderOverlay from "../components/loadinOverlay";
 
 const EditUser = () => {
   const location = useLocation();
@@ -23,6 +24,7 @@ const EditUser = () => {
   const [deleteUser] = useMutation(DELETE_USER);
   const [removePP, setRemovePP] = useState(false);
   const [isSaveModal, setIsSaveModal] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState({
     name: "",
     email: "",
@@ -99,20 +101,26 @@ const EditUser = () => {
         departmentId: departmentList?.find((d) => d.name === dept)?.id,
         role: jobTitle,
       };
-
+setLoading(true);
       updateUser({ variables: formData })
         .then((response) => {
           const { status, message } = response.data.updateUser;
           if (status === "SUCCESS") {
+setLoading(false);
+
             toast.success("User updated successfully.");
+            localStorage.setItem("isUserDeleted", true);
             navigate("/home/users");
           } else {
             toast.error(message);
           }
         })
         .catch((error) => {
+setLoading(false);
+
           toast.error(error.message);
         });
+        
     }
   };
 
@@ -279,6 +287,7 @@ const EditUser = () => {
           </button>
         {isSaveModal && <SaveChangesModal setIsSaveModal={setIsSaveModal} />}
       </div>
+      {loading && <LoaderOverlay />}
     </div>
   );
 };

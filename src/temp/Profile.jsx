@@ -5,7 +5,7 @@ import Context from '../context/AppContext';
 import { useLocation } from 'react-router-dom';
 export default function Profile() {
   const location=useLocation();
-  const userDetails=location.state.userDetails;
+  const userDetails=location.state?.userDetails;
   console.log(userDetails,'userDetails')
   const[fullName, setFullName]=useState(userDetails?.fullName||"");
   const[email, setEmail]=useState(userDetails?.email||"");

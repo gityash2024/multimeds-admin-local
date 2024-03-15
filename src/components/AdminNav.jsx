@@ -61,7 +61,7 @@ const AdminNav = () => {
           {/* logo */}
           <div className="flex flex-col gap-1">
             <h1 className="text-white text-xs font-HelveticaNeueMedium uppercase">
-              ADMIN
+              {/* ADMIN */}
             </h1>
 
             <img

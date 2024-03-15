@@ -88,13 +88,13 @@ const [loading,setLoading]=useState(false)
       return;
     }
 
+    setLoading(true)
     const payload = {
       name: dept,
       description: description,
       permissions: Object.keys(permissions).filter((key) => permissions[key]),
       departmentId:departmentData?.id
     };
-setLoading(true)
     updateDepartment({ variables:  payload  })
       .then((response) => {
         const { status, message } = response.data.updateDepartment;
@@ -114,6 +114,7 @@ setLoading(true)
 
   const handleDelete = async() => {
     return;
+    setLoading(true);
     try {
       const { data } = await client.query({
         query: DELETE_DEPARTMENT,
@@ -125,6 +126,8 @@ setLoading(true)
     } catch (error) {
       console.error('Error deleting department:', error);
       toast.error("An error occurred while deleting the department.");
+    }finally{
+      setLoading(false);
     }
   };
 

@@ -22,6 +22,7 @@ import { DeleteForever, DeleteForeverOutlined } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import {toast} from "react-toastify";
+import LoaderOverlay from "../components/loadinOverlay";
 
 const GET_CATEGORIES = gql`
 query{getCategories{
@@ -82,6 +83,7 @@ console.log(productData,'productData')
   const[categories,setCategories]=useState([]);
   const [couponId, setCouponId] = useState("");
   const {  data:categoriesData, refetch:refetchCategories } = useQuery(GET_CATEGORIES);
+  const [loading,setLoading]=useState(false);
   useEffect(()=>{
     let data=[]
     if(categoriesData){
@@ -223,6 +225,7 @@ console.log(productData,'productData')
     : stockData;
 
   const handleFileUpload = async (file) => {
+    setLoading(true);
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -242,6 +245,8 @@ console.log(productData,'productData')
       setProductImages((prevImages) => [...prevImages, uploadedUrl]);
     } catch (error) {
       console.error("Error uploading file:", error.message);
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -269,9 +274,9 @@ console.log(productData,'productData')
             </button>
             <PublishProductDropDown setOption={setOption} option={option} />
 
-            <button className="text-sm font-HelveticaNeueMedium text-[#031B89] flex justify-between py-3 px-4 w-fit bg-white border border-[#031B89] rounded items-center h-full">
+            {/* <button className="text-sm font-HelveticaNeueMedium text-[#031B89] flex justify-between py-3 px-4 w-fit bg-white border border-[#031B89] rounded items-center h-full">
               Archive this product
-            </button>
+            </button> */}
 
             {/* <button className="p-2">
               <DeleteForever />
@@ -535,6 +540,7 @@ console.log(productData,'productData')
           stockData={handleStockData}
         />
       )}
+      {loading && <LoaderOverlay />}
     </div>
   );
 };

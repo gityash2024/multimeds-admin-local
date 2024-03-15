@@ -42,6 +42,7 @@ query{getActiveCoupons{
     percentage
     description
     status
+    expiryDate
   
   }
 }}
@@ -210,8 +211,9 @@ query{getUsers{
     email
     profilePicture
     walletBalance
+    createdAt
     role
-    currentAddress{
+    addresses{
       id
       houseNumber
       aptOrBuildingName

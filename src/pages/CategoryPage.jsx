@@ -7,6 +7,7 @@ import { gql, useQuery, useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
 import ProfileInput from "../components/ProfileInput";
 import { client } from "../main";
+import LoaderOverlay from "../components/loadinOverlay";
 
 const DELETE_CATEGORY = gql`
   mutation DeleteCategory($input: ID!) {
@@ -115,7 +116,7 @@ export default function CategoryPage() {
   const navigate = useNavigate();
   const categories = location?.state?.category;
   const [deleteCategory] = useMutation(DELETE_CATEGORY);
-  const [fetchData, setRefetch]=useState(false)
+  const [fetchData, setRefetch] = useState(false);
   const [categoryName, setCategoryName] = useState(
     categories?.categoryName || ""
   );
@@ -135,8 +136,13 @@ export default function CategoryPage() {
   const [productListCategoryWise, setProductListForCategory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [updateCategory] = useMutation(UPDATE_CATEGORY);
-  console.log(categories);
+  const [searchText, setSearchText] = useState('');
+  const [createdDateFilter, setCreatedDateFilter] = useState('');
+  const [viewFilter, setViewFilter] = useState('');
+  const [filterProduct, setFilterdProducts] = useState([]);
+
   const handleUpdate = async () => {
+    setLoading(true);
     const { data } = await updateCategory({
       variables: {
         id: categories?.id,
@@ -150,10 +156,12 @@ export default function CategoryPage() {
       },
     });
     if (data?.updateCategory?.status === "SUCCESS") {
+      setLoading(false);
       toast.success("Category updated successfully");
       localStorage.setItem("isCategoryDeleted", true);
       navigate("/home/inventory");
     } else {
+      setLoading(false);
       toast.error(
         data?.updateCategory?.message ||
           "An error occurred while updating the category"
@@ -161,7 +169,6 @@ export default function CategoryPage() {
     }
   };
 
-  
   useEffect(() => {
     let data2 = [];
     if (data) {
@@ -173,28 +180,28 @@ export default function CategoryPage() {
       setSegmentList(data2);
     }
   }, [data]);
-  console.log(
-    categories,
-    "--------------------------------------------------------------- categories------------"
-  );
+
   const handleDeleteCategory = async () => {
+    setLoading(true);
     const { data } = await deleteCategory({
       variables: {
         input: categories.id,
       },
     });
     if (data?.deleteCategory?.status === "SUCCESS") {
+      setLoading(false);
       toast.success("Category deleted successfully");
       localStorage.setItem("isCategoryDeleted", true);
       navigate("/home/inventory");
     } else {
+      setLoading(false);
       toast.error(
         data?.deleteCategory?.message ||
           "An error occurred while deleting the category"
       );
     }
   };
-  const [discountValidity, setDiscountValidity] = useState(true);
+
   const fetchcategoriesProducts = async () => {
     setLoading(true);
     try {
@@ -207,6 +214,7 @@ export default function CategoryPage() {
       );
 
       setProductListForCategory(filteredproduct);
+      setFilterdProducts(filteredproduct);
 
       console.log(data?.getAllProducts?.products);
     } catch (error) {
@@ -215,15 +223,61 @@ export default function CategoryPage() {
       setLoading(false);
     }
   };
-  useEffect(() => {
 
+  useEffect(() => {
     if (categories?.id) {
       fetchcategoriesProducts();
     }
   }, [categories]);
+
   useEffect(() => {
-    fetchcategoriesProducts() 
-  },[])
+    fetchcategoriesProducts();
+  }, []);
+
+// Inside the handleResetFilters function
+// Inside the handleResetFilters function
+const handleResetFilters = () => {
+  setSearchText('');
+  setCreatedDateFilter('');
+  setViewFilter('');
+};
+
+// Inside the useEffect hook where filtering is applied
+useEffect(() => {
+  if(!searchText && !createdDateFilter && !viewFilter) {
+    setFilterdProducts(productListCategoryWise);
+    return;
+  }
+  
+  // Apply filters on productListCategoryWise
+  let filteredProducts = productListCategoryWise?.filter(product => {
+    let passesSearchFilter = true;
+    let passesCreatedDateFilter = true;
+    let passesViewFilter = true;
+
+    if (searchText) {
+      passesSearchFilter = product.productName.toLowerCase().includes(searchText.toLowerCase());
+    }
+    
+    if (createdDateFilter) {
+      const productCreatedDate = new Date(Number(product.createdAt));
+      const filterDate = new Date(createdDateFilter);
+      passesCreatedDateFilter = productCreatedDate.getTime() >= filterDate.getTime();
+    }
+
+    if (viewFilter === 'Active') {
+      passesViewFilter = product.published;
+    } else if (viewFilter === 'Draft') {
+      passesViewFilter = !product.published;
+    }
+
+    return passesSearchFilter && passesCreatedDateFilter && passesViewFilter;
+  });
+  
+  setFilterdProducts(filteredProducts);
+}, [searchText, createdDateFilter, viewFilter]);
+
+
   return (
     <div className="flex flex-col gap-[48px] p-[48px] w-full bg-white">
       <div className="flex justify-between items-center">
@@ -236,6 +290,8 @@ export default function CategoryPage() {
                 type="text"
                 placeholder="Search for products"
                 className="placeholder:text-[#94A3B8] md:text-sm text-xs focus:outline-none w-full"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
               />
             </div>
           </div>
@@ -259,6 +315,7 @@ export default function CategoryPage() {
           </div>
         </div>
       </div>
+      {/* General Information */}
       <div>
         <h2 className="text-[18px] font-HelveticaNeueBold leading-[22.5px] mb-[24px]">
           General Information
@@ -286,9 +343,7 @@ export default function CategoryPage() {
               wide
               dropdownField
               dropdownList={segmentList}
-              // isError={errors.segment}
               setValue={(value) => setCategorySegment(value)}
-              // errorMsg={errors?.segment}
             />
           </div>
           <div>
@@ -312,50 +367,66 @@ export default function CategoryPage() {
           </button>
         </div>
       </div>
-      <div></div>
-      <div>
-        <div className="mb-[24px]">
-          <p className="mb-[8px]">Filters</p>
-          <div className="flex gap-[32px]">
-            <div className="flex items-center gap-[8px]">
-              <p className="text-slate-500 font-helvetica-neue text-[12px] font-normal leading-3">
-                Date Created:
-              </p>
-              <div className="text-[#7487FF] bg-[#F8FAFC] px-[12px] py-[8px] rounded-3xl">
-                <input type="date" className="bg-transparent outline-none" />
-              </div>
-            </div>
-            <div className="flex items-center gap-[8px]">
-              <p className="text-slate-500 font-helvetica-neue text-[12px] font-normal leading-3">
-                View:{" "}
-              </p>
-              <div className="text-[#7487FF] bg-[#F8FAFC] px-[12px] py-[8px] rounded-3xl">
-                <select className="bg-transparent outline-none">
-                  <option>Active</option>
-                  <option>Draft</option>
-                  <option>Archived</option>
-                </select>
-              </div>
+      {/* Filter section */}
+      <div className="mb-[24px]">
+        <p className="mb-[8px]">Filters</p>
+        <div className="flex gap-[32px]">
+          <div className="flex items-center gap-[8px]">
+            <p className="text-slate-500 font-helvetica-neue text-[12px] font-normal leading-3">
+              Date Created:
+            </p>
+            <div className="text-[#7487FF] bg-[#F8FAFC] px-[12px] py-[8px] rounded-3xl">
+              <input
+                type="date"
+                value={createdDateFilter}
+                onChange={(e) => setCreatedDateFilter(e.target.value)}
+                className="bg-transparent outline-none"
+              />
             </div>
           </div>
-        </div>
-        <div className="grid md:grid-cols-2 gap-y-[24px] gap-x-[16px]">
-          {productListCategoryWise?.map((data) => {
-            return (
-              <CategoryCard
-                key={data.id}
-                productData={data}
-                enableDiscount={discountValidity}
-              />
-            );
-          })}
-          {!productListCategoryWise?.length && (
-            <div className="text-end">
-              <p>No product found</p>
+          <div className="flex items-center gap-[8px]">
+            <p className="text-slate-500 font-helvetica-neue text-[12px] font-normal leading-3">
+              View:{" "}
+            </p>
+            <div className="text-[#7487FF] bg-[#F8FAFC] px-[12px] py-[8px] rounded-3xl">
+              <select
+                value={viewFilter}
+                onChange={(e) => setViewFilter(e.target.value)}
+                className="bg-transparent outline-none"
+              >
+                <option value="" disabled>Select</option>
+                <option value="Active">Active</option>
+                <option value="Draft">Draft</option>
+              </select>
             </div>
+          </div>
+          {(createdDateFilter || viewFilter || searchText) && (
+            <button
+              className="text-white text-[16px] font-[500] leading-[20px] bg-gray-500 px-[16px] py-[12px] rounded-[4px]"
+              onClick={handleResetFilters}
+            >
+              Reset Filters
+            </button>
           )}
         </div>
       </div>
+      {/* Product list */}
+      <div className="grid md:grid-cols-2 gap-y-[24px] gap-x-[16px]">
+        {filterProduct?.map((data) => {
+          return (
+            <CategoryCard
+              key={data.id}
+              productData={data}
+            />
+          );
+        })}
+        {!filterProduct?.length && (
+          <div className="text-end">
+            <p>No product found</p>
+          </div>
+        )}
+      </div>
+      {(loading || loadingSegment) && <LoaderOverlay />}
     </div>
   );
 }

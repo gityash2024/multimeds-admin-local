@@ -6,80 +6,23 @@ import SearchIcon from "../assets/searchIcon.svg";
 import UserCell from "../components/UserCell";
 import { Link } from "react-router-dom";
 import { client } from "../main";
+import LoaderOverlay from "../components/loadinOverlay";
 
-const SkeletonLoader = () => {
-  return (
-    <div className="w-full flex flex-col md:p-12 py-8 px-3 md:gap-12 gap-6 bg-white">
-      {/* Heading */}
-      <div className="animate-pulse">
-        <h1 className="md:text-2xl text-xl font-HelveticaNeueBold bg-gray-200 h-8 mb-4"></h1>
-      </div>
-
-      {/* departments */}
-      <div className="flex flex-col md:gap-8 gap-6">
-        {/* header */}
-        <div className="flex md:flex-row flex-col md:justify-between gap-2">
-          <div className="flex flex-col md:gap-1 gap-2">
-            <div className="bg-gray-200 h-6 w-40"></div>
-            <div className="bg-gray-200 h-4 w-72"></div>
-          </div>
-          <div className="bg-gray-200 h-10 w-32 rounded"></div>
-        </div>
-
-        {/* department cards */}
-        <div className="grid md:grid-cols-2 grid-cols-1 md:gap-4 gap-2">
-          {[1, 2, 3, 4].map((index) => (
-            <div key={index} className="bg-gray-200 rounded-md h-28"></div>
-          ))}
-        </div>
-      </div>
-
-      {/* users */}
-      <div className="flex flex-col md:gap-8 gap-6">
-        {/* header */}
-        <div className="flex md:flex-row flex-col md:justify-between md:h-[2.75rem] gap-2">
-          <div className="flex flex-col md:gap-1 gap-2">
-            <div className="bg-gray-200 h-6 w-32"></div>
-            <div className="bg-gray-200 h-4 w-72"></div>
-          </div>
-          <div className="flex md:flex-row flex-col md:gap-4 gap-2">
-            <div className="bg-gray-200 h-10 w-48 rounded"></div>
-            <div className="bg-gray-200 h-10 w-32 rounded"></div>
-          </div>
-        </div>
-
-        {/* user table */}
-        <div className="rounded-lg border border-[#E2E8F0] bg-white flex flex-col">
-          {/* labels */}
-          <div className="md:flex hidden justify-between border-y border-[#CBD5E1] bg-[#FAFAFA] py-6 px-12">
-            <div className="bg-gray-200 h-8 w-44"></div>
-            <div className="bg-gray-200 h-8 w-32"></div>
-            <div className="bg-gray-200 h-8 w-32"></div>
-            <div className="bg-gray-200 h-8 w-32"></div>
-          </div>
-
-          {[1, 2, 3, 4].map((index) => (
-            <div key={index} className="bg-gray-200 rounded-md h-16"></div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 
 const Users = () => {
   const [departments, setDepartments] = useState([]);
   const [departmentsUsers, setDepartmentsUsers] = useState([]);
-  const { data: addedDepartments,refetch } = useQuery(GET_ADDED_DEPARTMENTS);
+  const { data: addedDepartments,refetch:refetchData } = useQuery(GET_ADDED_DEPARTMENTS);
   // const { data: departmentUsers } = useQuery(GET_DEPARTMENT_USER);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(()=>{
     if(localStorage.getItem('isUserDeleted')){
+      setLoading(true)
       console.log('refetching request received')
-      refetch();
+      refetchData();
       localStorage.removeItem('isUserDeleted')
     }
   },[])
@@ -143,7 +86,6 @@ const Users = () => {
 
   return (
     <>
-      {loading ? <SkeletonLoader /> :
         <div className="w-full flex flex-col md:p-12 py-8 px-3 md:gap-12 gap-6 bg-white">
           {/* Heading */}
           <h1 className="md:text-2xl text-xl font-HelveticaNeueBold">
@@ -251,7 +193,7 @@ const Users = () => {
             </div>
           </div>
         </div>
-      }
+      {loading ? <LoaderOverlay /> : <></>}
     </>
   );
 };

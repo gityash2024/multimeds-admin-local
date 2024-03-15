@@ -5,6 +5,7 @@ import ArrowDown from "../assets/arrowDown.svg";
 import MedicinesCard from "./MedicinesCard";
 import { gql, useMutation } from "@apollo/client";
 import {toast} from 'react-toastify'
+import LoaderOverlay from "./loadinOverlay";
 const UPDATE_SEGMENT_NAME=gql`
   mutation UpdateSegmentName($input: UpdateSegmentNameInput!) {
     updateSegmentName(input: $input) {
@@ -27,11 +28,13 @@ const InventoryBox = (props) => {
   const {segment,categories,refetch}=props;
 
   console.log(segment,categories,'+++++++++++++======+++==++++=====+====++++')
+  const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isEdit, openIsEdit] = useState(false);
   const [segmentName, setSegmentName] = useState(segment?.segmentName);
   const [updateSegmentName]=useMutation(UPDATE_SEGMENT_NAME)
 const handleUpdateSegmentName=async()=>{
+  setLoading(true);
   const {data}=await updateSegmentName({
     variables:{
       input:{
@@ -42,9 +45,13 @@ const handleUpdateSegmentName=async()=>{
   })
   if(data?.updateSegmentName?.status==='SUCCESS'){
     openIsEdit(false);
+  setLoading(false);
+
     toast.success('Segment name updated successfully');
     refetch();
   }else{
+  setLoading(false);
+
     toast.error(data?.updateSegmentName?.message||'An error occurred while updating the segment name')
   }
 }
@@ -52,15 +59,18 @@ const handleUpdateSegmentName=async()=>{
 const [deleteSegment]=useMutation(DELETE_SEGMENT);
 
   const handleDeleteSegment=async()=>{
+    setLoading(true);
     const {data}=await deleteSegment({
       variables:{
         input:segment.id
       }
     })
     if(data?.deleteSegment?.status==='SUCCESS'){
+      setLoading(false);
       toast.success('Segment deleted successfully');
       refetch();
     }else{
+      setLoading(false);
       toast.error(data?.deleteSegment?.message||'An error occurred while deleting the segment')
     }
   }
@@ -143,6 +153,7 @@ const [deleteSegment]=useMutation(DELETE_SEGMENT);
           </div>
         </>
       )}
+      {loading&& <LoaderOverlay/>}
     
     </div>
   );

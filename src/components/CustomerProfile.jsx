@@ -8,7 +8,7 @@ import Context from "../context/AppContext";
 
 export default function CustomerProfile() {
   const location=useLocation();
-  const userDetails=location.state.userDetails;
+  const userDetails=location.state?.userDetails;
   const [others, setOthers] = useState(false);
   const {
     showCouponPopUp,

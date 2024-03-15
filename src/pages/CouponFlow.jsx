@@ -14,7 +14,7 @@ import {
 import { useMutation, useQuery } from "@apollo/client";
 import { toast } from "react-toastify";
 import { TextField, Button, Switch } from "@material-ui/core";
-
+import LoaderOverlay from "../components/loadinOverlay";
 export default function CouponFlow() {
   const [categoryText, setCategoryText] = useState("");
   const [menuController, setMenuController] = useState(false);
@@ -29,9 +29,12 @@ export default function CouponFlow() {
   const [D, setD] = useState([]);
   const [couponsData, setCouponsData] = useState([]);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
+  const [loading,setLoading]=useState(true);
+
 
   useEffect(() => {
     if (data) {
+      setLoading(false);
       setCouponsData(data?.getActiveCoupons?.coupons || []);
     }
   }, [data]);
@@ -72,11 +75,14 @@ export default function CouponFlow() {
   }, []);
 
   const fetchCoupons = async () => {
+    setLoading(true);
     try {
       const { data } = await refetchCoupons();
       setCouponsData(data?.getActiveCoupons?.coupons || []);
     } catch (error) {
       console.error("Error fetching coupons:", error);
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -120,6 +126,8 @@ export default function CouponFlow() {
 
   const handleUpdateCoupon = async () => {
     if (!selectedCoupon) return;
+   
+    setLoading(true);
     let category = [];
     D?.forEach((item) => {
       if (item?.text) {
@@ -151,6 +159,8 @@ export default function CouponFlow() {
     } catch (error) {
       console.error("Error updating coupon:", error);
       toast.error("Error updating coupon. Please try again later.");
+    }finally{
+      setLoading(false);
     }
   };
   
@@ -161,6 +171,8 @@ export default function CouponFlow() {
   };
 
   const handleDeleteCoupon = async (id) => {
+    if (!id) return;
+    setLoading(true);
     try {
       const { data } = await deleteCoupon({ variables: { id } });
       toast.success("Coupon deleted successfully!");
@@ -168,6 +180,8 @@ export default function CouponFlow() {
     } catch (error) {
       console.error("Error deleting coupon:", error);
       toast.error("Error deleting coupon. Please try again later.");
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -663,6 +677,7 @@ export default function CouponFlow() {
           </div>
         </>
       )}
+      {loading && <LoaderOverlay />}
     </div>
   );
 }
