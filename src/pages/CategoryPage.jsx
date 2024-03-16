@@ -42,72 +42,109 @@ const UPDATE_CATEGORY = gql`
 `;
 
 const GET_ALL_PRODUCTS = gql`
-  query {
-    getAllProducts {
-      status
-      message
-      products {
+query {
+  getAllProducts {
+    status
+    message
+    products {
+      id
+      productName
+      productImages
+    manufacturer
+      composition
+      price
+      prescriptionRequired
+      type
+      tags
+      concerns
+      sku
+      manufacturerAddress
+      marketer
+      marketerAddress
+      description
+      directionToUse
+      safetyInformation
+      ingredients
+      productForm
+      consumeType
+      unitsInPack
+      boxContent
+      size
+      scentOrFlavour
+      stockQuantity
+      packForm
+      productWeightInGrams
+      lengthInCentimeters
+      widthInCentimeters
+      heightInCentimeters
+      hsn
+      gstPercentage
+      maxRetailPrice
+      sp
+      discount
+      archived
+      published
+      storage
+      origin
+      createdAt
+      updatedAt
+      
+      stocks {
         id
-        productName
-        productImages
-        composition
-        concerns
-        sp
-        discount
-        archived
-        published
+        productId
+        manufacturer
+        groupNumber
+        boxes
+        sheets
+        noOfTabletsPerSheet
+        mrpPerSheet
+        batchNumber
+        manufacturingDate
+        expiryDate
         createdAt
         updatedAt
-        stocks {
+      }
+      bulletPoints {
+        id
+        point
+        description
+        author
+      }
+      category {
+        id
+        categoryName
+        segmentId
+        categoryDescription
+        segment {
           id
-          productId
-          manufacturer
-          groupNumber
-          boxes
-          sheets
-          noOfTabletsPerSheet
-          mrpPerSheet
-          batchNumber
-          manufacturingDate
-          expiryDate
-          createdAt
-          updatedAt
+          segmentName
         }
-        bulletPoints {
+        coupon {
           id
-          point
+          code
+          percentage
+          fixedAmount
           description
-          author
+          status
+          expiryDate
         }
-        category {
-          id
-          categoryName
-          segmentId
-          categoryDescription
-          segment {
-            id
-            segmentName
-          }
-          coupon {
-            id
-            code
-            percentage
-          }
-          products {
-            id
-            productName
-            productImages
-            composition
-            concerns
-            sp
-            discount
-          }
-          createdAt
-          updatedAt
+        products{
+          productName
+          productImages
+          manufacturer
+          type
+          description
+          maxRetailPrice
+          sp
+        
         }
+      
+        createdAt
+        updatedAt
       }
     }
   }
+}
 `;
 
 export default function CategoryPage() {
@@ -225,6 +262,7 @@ export default function CategoryPage() {
   };
 
   useEffect(() => {
+    console.log(categories, "categories");
     if (categories?.id) {
       fetchcategoriesProducts();
     }

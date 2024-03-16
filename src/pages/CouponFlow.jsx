@@ -31,11 +31,14 @@ export default function CouponFlow() {
   const [selectedCoupon, setSelectedCoupon] = useState(null);
   const [loading,setLoading]=useState(true);
 
+  const [filteredCouponsData, setFilteredCouponsData] = useState([]);
 
   useEffect(() => {
     if (data) {
       setLoading(false);
-      setCouponsData(data?.getActiveCoupons?.coupons || []);
+      setCouponsData(data?.getCoupons?.coupons || []);
+      setFilteredCouponsData(data?.getCoupons?.coupons || []);
+
     }
   }, [data]);
   const [couponForm, setCouponForm] = useState({
@@ -73,12 +76,53 @@ export default function CouponFlow() {
   useEffect(() => {
     fetchCoupons();
   }, []);
+  useEffect(() => {
+    applyFilters();
+  }, [filters, couponsData]);
+  const applyFilters = () => {
+    const { status, couponType, expiryDateRange, couponName } = filters;
+    console.log(expiryDateRange, "expiryDateRange");
+    let filtered = [...couponsData];
+
+    if (status === "active") {
+      filtered = filtered.filter((coupon) => coupon.status === "ACTIVE");
+    } else if (status === "inactive") {
+      filtered = filtered.filter((coupon) => coupon.status === "INACTIVE");
+    }
+
+    if (couponType) {
+      filtered = filtered.filter((coupon) => coupon.type === couponType);
+    }
+
+    if (expiryDateRange.start && expiryDateRange.end) {
+      filtered = filtered.filter((coupon) => {
+        const expiryDate = new Date(Number(coupon.expiryDate));
+        const startDate = expiryDateRange.start
+          ? new Date(new Date(expiryDateRange.start).getTime())
+          : new Date(-8640000000000000);
+        const endDate = expiryDateRange.end
+          ? new Date(new Date(expiryDateRange.end).getTime() + 86400000) // Add one day to include the end date
+          : new Date(8640000000000000);
+        return expiryDate >= startDate && expiryDate <= endDate;
+      });
+    }
+
+    if (couponName) {
+      filtered = filtered.filter((coupon) =>
+        coupon.code.toLowerCase().includes(couponName.toLowerCase())
+      );
+    }
+
+    setFilteredCouponsData(filtered);
+  };
 
   const fetchCoupons = async () => {
     setLoading(true);
     try {
       const { data } = await refetchCoupons();
-      setCouponsData(data?.getActiveCoupons?.coupons || []);
+      setCouponsData(data?.getCoupons?.coupons || []);
+      setFilteredCouponsData(data?.getCoupons?.coupons || []);
+
     } catch (error) {
       console.error("Error fetching coupons:", error);
     }finally{
@@ -113,7 +157,9 @@ export default function CouponFlow() {
         status: couponForm.status ? "ACTIVE" : "INACTIVE",
         expiryDate: couponForm.expiryDate,
         categories: category,
+        fixedAmount:Number(1)
       };
+      console.log(dts, "couponForm");
       const { data } = await createCoupon({ variables: dts });
       toast.success("Coupon created successfully!");
       setEditModal(false);
@@ -247,6 +293,7 @@ export default function CouponFlow() {
     });
     
   };
+  
 
   const handleResetFilters = () => {
     setFilters({
@@ -336,7 +383,16 @@ export default function CouponFlow() {
       resetForm();
     }
   }, [editModal]);
-
+  const formatDate = (expiryDate) => {
+    // Convert milliseconds to Date object
+    const date = new Date(Number(expiryDate));
+    // Get year, month, and day components
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    // Construct the formatted date string
+    return `${year}-${month}-${day}`;
+};
   useEffect(()=>{
     console.log(selectedCoupon)
     if(selectedCoupon){
@@ -346,7 +402,7 @@ export default function CouponFlow() {
         description: selectedCoupon?.description,
         type: selectedCoupon?.type,
         status: selectedCoupon?.status === "ACTIVE",
-        expiryDate: selectedCoupon?.expiryDate,
+        expiryDate: formatDate(selectedCoupon?.expiryDate), // Format expiry date
         categories: selectedCoupon?.categories
       })
     }
@@ -369,6 +425,7 @@ export default function CouponFlow() {
                 name="couponName"
                 value={filters.couponName}
                 onChange={handleFilterChange}
+                
               />
             </div>
           </div>
@@ -459,7 +516,7 @@ export default function CouponFlow() {
           </div>
         </div>
       </div>
-      {couponsData?.length === 0 ? (
+      {filteredCouponsData?.length === 0 ? (
         <div style={{ display: "flex", justifyContent: "center" }}>
           <p className="mt-[48px] text-[#94A3B8] text-[14px] font-[500] leading-[17.5px]">
             No Coupons To Show
@@ -467,7 +524,7 @@ export default function CouponFlow() {
         </div>
       ) : (
         <div className="w-full grid md:grid-cols-2 gap-y-[4px] gap-x-[16px] rounded-[8px] mt-[48px]">
-          {couponsData?.map((item) => (
+          {filteredCouponsData?.map((item) => (
             <div
               className=" flex flex-col gap-[8px] border border-[#DBEAFE] rounded-[8px] p-[16px]"
               key={item.id}
@@ -598,11 +655,10 @@ export default function CouponFlow() {
                 />
               </div>
               {/* Categories */}
-              <div>
+              {/* <div>
                 <p className="text-[#64748B] text-[10px] font-[300] leading-[12.5px] italic mb-[4px]">
                   Categories
                 </p>
-                {/* Tag input for categories */}
                 <input
                   className="outline-none w-full p-[12px] border border-[#64748B] rounded-[4px]"
                   type="text"
@@ -612,7 +668,6 @@ export default function CouponFlow() {
                   onKeyPress={handleCategoryInput}
                   placeholder="Type and press enter to add category"
                 />
-                {/* Display added categories */}
                 {D.map((category) => (
                   <span
                     key={category.id}
@@ -621,7 +676,7 @@ export default function CouponFlow() {
                     {category.text}
                   </span>
                 ))}
-              </div>
+              </div> */}
               {/* Save Button */}
               {!selectedCoupon && (
                 <button

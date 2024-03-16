@@ -23,8 +23,8 @@ export const ADMIN_LOGIN = gql`
 
 
 export const CREATE_COUPON = gql`
-  mutation createCoupon($code: String!, $percentage: Int!, $description: String!, $type: CouponType!, $status: CouponStatus!, $expiryDate: String!, $categories: [String]!) {
-    createCoupon(input: { code: $code, percentage: $percentage, description: $description, type: $type, status: $status, expiryDate: $expiryDate, categories: $categories }) {
+  mutation createCoupon($code: String!, $percentage: Int!, $description: String!, $type: CouponType!, $status: CouponStatus!, $expiryDate: String!, $categories: [String]!,$fixedAmount: Float) {
+    createCoupon(input: { code: $code, percentage: $percentage, fixedAmount: $fixedAmount, description: $description, type: $type, status: $status, expiryDate: $expiryDate, categories: $categories }) {
       status
       message
     }
@@ -33,17 +33,56 @@ export const CREATE_COUPON = gql`
 
 
 export const GET_COUPONS = gql`
-query{getActiveCoupons{
+query{getCoupons{
   status
   message
   coupons{
-    code
     id
+    code
+    type
     percentage
+    fixedAmount
     description
     status
     expiryDate
-  
+    createdAt
+    updatedAt
+    associatedCategories{
+      id
+      categoryName
+      segmentId
+      categoryDescription
+      segment{
+        id
+        segmentName
+      }
+      coupon{
+        id
+        code
+        type
+        percentage
+        fixedAmount
+        description
+        status
+        expiryDate
+        createdAt
+        updatedAt
+
+      }
+      products{
+        id
+        productName
+        productImages
+        manufacturer
+        type
+        description
+        maxRetailPrice
+        sp
+        
+      }
+      createdAt
+      updatedAt
+    }
   }
 }}
 `;

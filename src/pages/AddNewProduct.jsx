@@ -106,7 +106,7 @@ console.log(productData,'productData')
     const [isChecked,setIsChecked] = useState(productData?.isPrescriptionNeeded||true);
 
   useEffect(() => {
-    setCoupons(data?.getActiveCoupons?.coupons);
+    setCoupons(data?.getCoupons?.coupons);
   }, [data]);
   // Function to handle adding a new product
   const handleAddProduct = async() => {
