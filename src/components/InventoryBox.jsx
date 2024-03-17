@@ -77,7 +77,7 @@ const [deleteSegment]=useMutation(DELETE_SEGMENT);
   return (
     <div className="flex flex-col gap-6">
       {/* heading */}
-      <div className="border-b border-[#CBD5E1] flex justify-between py-2 items-center">
+      <div  className="border-b border-[#CBD5E1] flex justify-between py-2 items-center">
         <h1 className="text-2xl font-HelveticaNeueBold">
           {segment?.segmentName} ({categories?.length||0})
         </h1>

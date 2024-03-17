@@ -24,6 +24,7 @@ const Users = () => {
       console.log('refetching request received')
       refetchData();
       localStorage.removeItem('isUserDeleted')
+      window.location.reload();
     }
   },[])
   useEffect(() => {

@@ -44,6 +44,7 @@ const Login = () => {
         return
       }
       localStorage.setItem("token", token);
+      localStorage.setItem("isLoginPage", true);
 
       toast.success("Login successful!");
       navigate("/home");
@@ -70,6 +71,7 @@ const Login = () => {
       }
       localStorage.setItem("token", token);
       toast.success("Registration successful!");
+      localStorage.setItem("isLoginPage", true);
       navigate("/home");
     } catch (error) {
       toast.error(error?.message || "Registration failed. Please try again.");

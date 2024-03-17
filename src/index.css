@@ -122,6 +122,14 @@ margin: 0;
     border-color: #FFF #FFF transparent transparent;
     animation: rotation 2s linear infinite;
   }
+
+  .notifications-container{
+    padding: 4px;
+    height: 70vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    text-align: justify;
+  }
       
   @keyframes rotation {
     0% {

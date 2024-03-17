@@ -68,7 +68,7 @@ export default function CategoryCard(props) {
               {<p className='text-[10px] leading-[12.5px] font-HelveticaNeueThin italic'>Last updated {formatDate(data?.updatedAt)}</p>}
             </div>
             <div className='flex gap-[8px] w-full'>
-              <img className='rounded-[8px]' src={MedicineImage} alt="Category" />
+              <img className='rounded-[8px]' src={props?.productData?.productImages[0]} alt="Category" />
               <div className='flex justify-between w-full'>
                 <div className='flex flex-col gap-[4px]'>
                   <div className='flex gap-[8px] items-center'>

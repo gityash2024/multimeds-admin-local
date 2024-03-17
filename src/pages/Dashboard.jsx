@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import G1 from '../assets/g1.svg'
 import G2 from '../assets/g2.svg'
 import G3 from '../assets/g3.svg'
@@ -8,6 +8,8 @@ import DecreaseArrow from '../assets/downArrowG2.svg';
 import { Link } from 'react-router-dom';
 import DateRangeSelector from '../components/DateRangeSelector';
 import OrdersSwitch from '../components/OrdersSwitch';
+import Confetti from 'react-confetti';
+
 export default function Dashboard() {
     const orders = [
         {
@@ -90,8 +92,26 @@ export default function Dashboard() {
     const [stockData, setStockData] = useState([{id: 1, title: 'Stock Expiry alert!', type: 'Alert', product: 'Dolonext DT 500mg', batchNumber: 'DJSDHETUXY3933', expireIn: '1 week'}])
     const [flag, setFlag] = useState(false);
     const [dateRange, setDateRange] = useState('This week');
+    const [explode, setExplode] = useState(false);
+
+    useEffect(() => {
+        // Trigger confetti on mount
+        if(localStorage.getItem('isLoginPage')){
+        setExplode(true);
+        const timer = setTimeout(() => {
+          // Stop confetti after 2 seconds
+          localStorage.removeItem('isLoginPage');
+          setExplode(false);
+        }, 5000);
+
+        return () => clearTimeout(timer);
+      }
+      }, []);
+
   return (
     <div className='flex flex-col gap-[24px] p-[48px] w-full font-HelveticaNeue'>
+              {explode && <Confetti />}
+
         <div  className='flex justify-between items-center w-full'>
             <h1 className='text-[24px] font-[700] leading-[30px]'>Dashboard</h1>
             <div className='w-[230px]'>
@@ -213,6 +233,7 @@ export default function Dashboard() {
                 </div>
             </div>
         </div>
+
     </div>
   )
 }
