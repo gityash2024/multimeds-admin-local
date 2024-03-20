@@ -33,9 +33,9 @@ export default function CustomerProfile() {
               Customer Details
             </h1>
             <div className="flex gap-[8px]">
-              <button className="text-white text-[16px] font-[500] leading-[20px] bg-[#031B89] px-[16px] py-[12px] rounded-[4px]" onClick={()=>setSaveModal(true)}>
+             {currentPathname === "customer_profile" && <button className="text-white text-[16px] font-[500] leading-[20px] bg-[#031B89] px-[16px] py-[12px] rounded-[4px]" onClick={()=>setSaveModal(true)}>
                 Save Changes
-              </button>
+              </button>}
               <button className="text-[#EF4444] text-[16px] font-[500] leading-[20px] border-[2px] border-[#EF4444] px-[16px] py-[12px] rounded-[4px]" onClick={() => setShowDeletePopUp('customer')}>
                 Delete Customer
               </button>

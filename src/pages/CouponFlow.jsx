@@ -655,7 +655,7 @@ export default function CouponFlow() {
                 />
               </div>
               {/* Categories */}
-              {/* <div>
+              <div>
                 <p className="text-[#64748B] text-[10px] font-[300] leading-[12.5px] italic mb-[4px]">
                   Categories
                 </p>
@@ -676,7 +676,7 @@ export default function CouponFlow() {
                     {category.text}
                   </span>
                 ))}
-              </div> */}
+              </div>
               {/* Save Button */}
               {!selectedCoupon && (
                 <button

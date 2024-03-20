@@ -83,7 +83,7 @@ export default function Order(props) {
       </div>}
       {props.status.toLowerCase() === 'pending' && <div className='flex gap-[8px] justify-end px-[24px] mb-[16px]'>
             <button className='border-2 border-[#031B89] text-[#031B89] text-[16px] font-[500] leading-[20px] px-[16px] py-[12px] rounded-[4px]'>Cancel this Order</button>
-            <button className='w-[245px] text-center text-white text-[16px] font-[500] leading-[20px] bg-[#031B89] px-[16px] py-[12px] rounded-[4px]'>Track your Order</button>
+            <button className='w-[245px] text-center text-white text-[16px] font-[500] leading-[20px] bg-[#031B89] px-[16px] py-[12px] rounded-[4px]'>Track Order</button>
       </div>}
       {props.status.toLowerCase() === 'processing' && <div className='flex justify-between px-[24px] mb-[16px]'>
             <div className='flex items-center gap-[24px]'>
