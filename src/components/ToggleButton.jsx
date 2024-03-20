@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
-const ToggleButton = ({ permission, setPermission }) => {
-  const [on, setOn] = useState(permission);
+const ToggleButton = ({ permission, setPermission ,toggleData}) => {
+  const [on, setOn] = useState(toggleData||permission);
   return (
     <button
       onClick={() =>{setOn(!permission); setPermission(!permission) ;}}

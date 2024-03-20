@@ -69,7 +69,7 @@ console.log(productData,'productData')
   const [searchQuery, setSearchQuery] = useState("");
   const [dataToUpdate, setdataToUpdate] = useState({});
   const [coupons, setCoupons] = useState([]);
-  const [permission, setPermission] = useState(productData?.discount||false);
+  const [permission, setPermission] = useState(productData?.coupon||false);
   const [addProductToCategory] = useMutation(ADD_PRODUCT_TO_CATEGORY);
   const [updateProduct] = useMutation(UPDATE_PRODUCT);
   const [productImages, setProductImages] = useState( productData?.productImages||[]);
@@ -81,7 +81,7 @@ console.log(productData,'productData')
   const [composition, setComposition] = useState(productData?.composition||"");
   const [categoryId, setCategoryId] = useState(productData?.category?.categoryName||"");
   const[categories,setCategories]=useState([]);
-  const [couponId, setCouponId] = useState("");
+  const [couponId, setCouponId] = useState(productData?.coupon?.code||"");
   const {  data:categoriesData, refetch:refetchCategories } = useQuery(GET_CATEGORIES);
   const [loading,setLoading]=useState(false);
   useEffect(()=>{
@@ -99,7 +99,10 @@ console.log(productData,'productData')
 
   useEffect(()=>{
     console.log(category)
-    setCategoryId(category?.categoryName);
+    if(category){
+
+      setCategoryId(category?.categoryName);
+    }
   },[categories])
 
   const [productName, setProductName] = useState(productData?.productName||"");
@@ -108,6 +111,9 @@ console.log(productData,'productData')
   useEffect(() => {
     setCoupons(data?.getCoupons?.coupons);
   }, [data]);
+  useEffect(()=>{
+      console.log(categoryId,"cate----------------goryId")
+  },[categoryId])
   // Function to handle adding a new product
   const handleAddProduct = async() => {
     // Prepare input data for the mutation
@@ -124,6 +130,7 @@ console.log(productData,'productData')
       published: option === 1 ? true : false,
       // discount:coupons?.filter((coupon)=>coupon?.id===couponId)[0]?.percentage || 0
     };
+    console.log(categoryId,"categoryId")
     if(!input?.productName || !categoryId|| !input?.origin|| !input?.storage|| !input?.composition){
       toast.error("Please fill all the required fields")
       return
@@ -160,11 +167,37 @@ console.log(productData,'productData')
          toast.error(response.data?.addNewProductToCategory?.message)
        }
     }else{
-      const input = {
-        points: points,
-        stocks: stockData,
+      let newData = stockData?.map(({ __typename, ...stock }) => {
+        return {
+          ...stock,
+          noOfUnits: 0,
+          weightPerUnit: 0,
+          boxMrp: 0,
+          noOfGrams: 0,
+          noOfKgs: 0,
+          manufacturingDate:new Date(Number(stock?.manufacturingDate)),
+          expiryDate:new Date(Number(stock?.expiryDate))
+        };
+      });
+
+      let newPoints = points?.map(({ __typename, ...point }) => {
+        return {
+          ...point
+        };
+      })
+      
+      // Now newData contains the modified data without the __typename property
+      console.log(newData);
+      
+      
+      // Now newData contains the modified data
+      console.log(newData);
+      
+      let input = {
+        points: newPoints,
+        stocks: newData,
         productImages: productImages,
-        couponId: couponId,
+        couponId: coupons?.filter((coupon)=>coupon?.code===couponId)[0]?.id,
         origin: origin,
         storage: storage,
         composition: composition,
@@ -174,13 +207,14 @@ console.log(productData,'productData')
         archived:option===1 ? false : true,
         // discount:coupons?.filter((coupon)=>coupon?.id===couponId)[0]?.percentage || 0
       };
+    
       const response = await updateProduct({
         variables: {
           id: productData?.id,
           input: input,
         },
       })
-      if(response.data?.updateProductAdmin?.status){
+      if(response.data?.updateProductAdmin?.status==="SUCCESS"){
         toast.success(response.data?.updateProductAdmin?.message)
         localStorage.setItem("isCategoryDeleted",true)
         navigate("/home/inventory")
@@ -369,7 +403,7 @@ console.log(productData,'productData')
             Enable Discount for Product
           </h1>
 
-          <ToggleButton permission={permission} setPermission={setPermission} />
+          <ToggleButton permission={permission} toggleData={productData?.coupon?true:false} setPermission={setPermission} />
         </div>
       </div>
 
@@ -380,7 +414,7 @@ console.log(productData,'productData')
               <p className="text-[#64748B] ">Select Discount coupon</p>
               <span className="text-red-500">*</span>
             </p>
-            <select onChange={(e) => setCouponId(e.target.value)} className="outline-none text-[14px] font-[400] leading-[17.5px] border border-[#E2E8F0] p-[12px] rounded-sm w-full">
+            <select onChange={(e) => setCouponId(e.target.value)} value={couponId} className="outline-none text-[14px] font-[400] leading-[17.5px] border border-[#E2E8F0] p-[12px] rounded-sm w-full">
               <option selected disabled>
                 Select Coupon
               </option>

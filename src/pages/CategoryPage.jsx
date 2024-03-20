@@ -88,21 +88,29 @@ query {
       origin
       createdAt
       updatedAt
-      
+      coupon {
+        id
+        code
+        percentage
+        fixedAmount
+        description
+        status
+        expiryDate
+      }
       stocks {
         id
-        productId
         manufacturer
         groupNumber
+        stockType
         boxes
         sheets
         noOfTabletsPerSheet
+        
+        
         mrpPerSheet
         batchNumber
         manufacturingDate
         expiryDate
-        createdAt
-        updatedAt
       }
       bulletPoints {
         id
