@@ -151,12 +151,13 @@ export default function CouponFlow() {
 
       let dts = {
         code: couponForm.code,
-        percentage: parseInt(couponForm.percentage),
+        percentage: Number(couponForm.percentage),
         description: couponForm.description,
         type: couponForm.type,
         status: couponForm.status ? "ACTIVE" : "INACTIVE",
         expiryDate: couponForm.expiryDate,
         categories: category,
+        products:[],
         fixedAmount:Number(1)
       };
       console.log(dts, "couponForm");
@@ -655,7 +656,7 @@ export default function CouponFlow() {
                 />
               </div>
               {/* Categories */}
-              <div>
+              {/* <div>
                 <p className="text-[#64748B] text-[10px] font-[300] leading-[12.5px] italic mb-[4px]">
                   Categories
                 </p>
@@ -676,7 +677,7 @@ export default function CouponFlow() {
                     {category.text}
                   </span>
                 ))}
-              </div>
+              </div> */}
               {/* Save Button */}
               {!selectedCoupon && (
                 <button

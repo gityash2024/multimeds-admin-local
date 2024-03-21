@@ -23,8 +23,8 @@ export const ADMIN_LOGIN = gql`
 
 
 export const CREATE_COUPON = gql`
-  mutation createCoupon($code: String!, $percentage: Int!, $description: String!, $type: CouponType!, $status: CouponStatus!, $expiryDate: String!, $categories: [String]!,$fixedAmount: Float) {
-    createCoupon(input: { code: $code, percentage: $percentage, fixedAmount: $fixedAmount, description: $description, type: $type, status: $status, expiryDate: $expiryDate, categories: $categories }) {
+  mutation createCoupon($code: String!,$products: [ID]!, $percentage: Int!, $description: String!, $type: CouponType!, $status: CouponStatus!, $expiryDate: String!, $categories: [ID]!,$fixedAmount: Float) {
+    createCoupon(input: { code: $code,products: $products, percentage: $percentage, fixedAmount: $fixedAmount, description: $description, type: $type, status: $status, expiryDate: $expiryDate, categories: $categories }) {
       status
       message
     }
