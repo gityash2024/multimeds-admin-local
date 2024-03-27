@@ -86,6 +86,27 @@ query{getCoupons{
   }
 }}
 `;
+export const GET_ACTIVE_COUPONS = gql`
+query{
+  getActiveCoupons{
+    status
+    message
+    coupons{
+      id
+      code
+      type
+      percentage
+      fixedAmount
+      description
+      status
+      expiryDate
+      createdAt
+      updatedAt
+      
+    }
+  }
+}
+`;
 
 export const UPDATE_COUPON = gql`
   mutation updateCoupon($id: ID!, $input: UpdateCouponInput!) {
@@ -232,12 +253,13 @@ export const UPDATE_DEPARTMENT=gql`
   }
 ` 
 export const DELETE_DEPARTMENT=gql`
-  mutation deleteDepartment($departmentId: ID!) {
-    deleteDepartment(id:  $departmentId ) {
-      status
-      message
-    }
+mutation deleteDepartment($deptId: ID!) {
+  deleteDepartment(input:$deptId) {
+    status
+    message
   }
+}
+
 `
 export const GET_USERS=gql`
 query{getUsers{

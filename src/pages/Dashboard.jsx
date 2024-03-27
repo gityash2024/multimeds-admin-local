@@ -161,8 +161,8 @@ export default function Dashboard() {
                 </div>
             </div>
             <div className='text-[16px] font-[700] leading-[20px]'>On-going info</div>
-            <div className='flex gap-[12px]'>
-                <div className='bg-white w-full p-[16px] rounded-[8px]'>
+            <div className='flex gap-[12px] table-scroll '>
+                <div className='bg-white w-full p-[16px] rounded-[8px] max-h-[470px] overflow-x-auto '>
                     <div className='flex justify-between items-center w-full mb-[16px]'><h1 className='text-[#94A3B8] text-[14px] font-HelveticaNeueMedium'>LIVE ORDERS</h1><div className='flex gap-[8px]'><p className={`text-[14px] font-HelveticaNeueMedium ${flag ? 'text-[#94A3B8]':''}`}>Processing orders</p><OrdersSwitch permission={flag} setPermission={setFlag} /><p className={`text-[14px] font-HelveticaNeueMedium ${flag ? '':'text-[#94A3B8]'}`}>Ongoing orders</p></div></div>
                     {/* <div> */}
                     <div className='flex flex-col gap-[8px]'>

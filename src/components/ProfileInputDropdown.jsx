@@ -26,6 +26,13 @@ const DateDropdown = ({ setIsDropdown, inputButtonRef, setValue, dropdownList })
   const filteredList = dropdownList?.filter(item =>
     item?.name?.toLowerCase()?.includes(searchTerm?.toLowerCase())
   );
+  const formatTextToCamelCase = (text) => {
+    return text
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
 
   return (
     <div
@@ -39,7 +46,7 @@ const DateDropdown = ({ setIsDropdown, inputButtonRef, setValue, dropdownList })
 
           <input
             type="text"
-            placeholder="Search for people"
+            placeholder="Search here"
             className="placeholder:text-[#94A3B8] text-sm focus:outline-none"
             value={searchTerm}
 
@@ -59,7 +66,7 @@ const DateDropdown = ({ setIsDropdown, inputButtonRef, setValue, dropdownList })
             }}
             className="text-sm text-[#0F172A] rounded py-1 px-1.5 bg-white hover:bg-[#E0E7FF] d-flex text-left"
           >
-            {item.name}
+            {formatTextToCamelCase(item?.name)}
           </h1>
         ))}
         {!filteredList?.length && <h1 className="text-sm text-[#0F172A] rounded py-1 px-1.5 d-flex items-center">No results found</h1>}

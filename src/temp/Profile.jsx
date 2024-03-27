@@ -5,7 +5,7 @@ import Context from '../context/AppContext';
 import { useLocation } from 'react-router-dom';
 export default function Profile() {
   const location=useLocation();
-  const userDetails=location.state?.userDetails;
+  const userDetails=JSON.parse(localStorage.getItem('userDetails'));
   console.log(userDetails,'userDetails')
   const[fullName, setFullName]=useState(userDetails?.fullName||"");
   const[email, setEmail]=useState(userDetails?.email||"");
@@ -33,15 +33,15 @@ export default function Profile() {
               <div className='flex flex-wrap gap-[24px]'>
                 <div>
                   <p className='text-[#64748B] text-[10px] font-[300] leading-[12.5px] italic mb-[4px]'>Name</p>
-                  <input  className='outline-none text-[14px] font-[400] leading-[17.5px] border border-[#E2E8F0] p-[12px] rounded-sm min-w-[314px]' type='text' placeholder='Enter name' value={fullName} onChange={(e)=>{setFullName(e.target.value)}}/>
+                  <input disabled  className='outline-none text-[14px] font-[400] leading-[17.5px] border border-[#E2E8F0] p-[12px] rounded-sm min-w-[314px]' type='text' placeholder='Enter name' value={fullName} onChange={(e)=>{setFullName(e.target.value)}}/>
                 </div>
                 <div>
                   <p className='text-[#64748B] text-[10px] font-[300] leading-[12.5px] italic mb-[4px]'>Email</p>
-                  <input className='outline-none text-[14px] font-[400] leading-[17.5px] border border-[#E2E8F0] p-[12px] rounded-sm min-w-[314px]' type='email' placeholder='Enter Email' value={email} onChange={(e)=>{setEmail(e.target.value)}}/>
+                  <input  disabled className='outline-none text-[14px] font-[400] leading-[17.5px] border border-[#E2E8F0] p-[12px] rounded-sm min-w-[314px]' type='email' placeholder='Enter Email' value={email} onChange={(e)=>{setEmail(e.target.value)}}/>
                 </div>
                 <div>
                   <p className='text-[#64748B] text-[10px] font-[300] leading-[12.5px] italic mb-[4px]'>Phone</p>
-                  <input className='outline-none text-[14px] font-[400] leading-[17.5px] border border-[#E2E8F0] p-[12px] rounded-sm min-w-[314px]' type='text' placeholder='Enter Contact Number' value={phone} onChange={(e)=>{setPhone(e.target.value)}}/>
+                  <input disabled  className='outline-none text-[14px] font-[400] leading-[17.5px] border border-[#E2E8F0] p-[12px] rounded-sm min-w-[314px]' type='text' placeholder='Enter Contact Number' value={phone} onChange={(e)=>{setPhone(e.target.value)}}/>
                 </div>
               </div>
             </div>

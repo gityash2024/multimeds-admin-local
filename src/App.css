@@ -41,3 +41,7 @@ body {
   margin-top: 10px;
   color: #ffffff;
 }
+.table-scroll{
+  max-height: 489px !important;
+  overflow: scroll;
+}

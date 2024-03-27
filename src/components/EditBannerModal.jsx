@@ -15,9 +15,8 @@
                     <h1 className='text-[16px] font-HelveticaNeueBold leading-[20px]'>Edit banner</h1>
                     <button className='text-[24px]' onClick={()=>{props.setOpenEditBannerModal(false)}}>&times;</button>
                 </div>
-                <div className='px-[16px]'>
+                {/* <div className='px-[16px]'>
                     <div className='flex justify-between'>
-                        <p className='text-[#475569] text-[12px] leading-[15px] font-HelveticaNeueItalic'>Image name</p>
                         <div className='flex gap-[7px]'>
                             <img src={downloadIcon} alt="download" onClick={()=>setSaveModal(true)} />
                             <img src={deleleIcon} alt="delete" onClick={()=>setDeleteModal(true)} />
@@ -29,10 +28,10 @@
                             <input ref={fileRef} type='file' className='hidden'  />
                         </div>
                     </div>
-                </div>
+                </div> */}
                 <div className='px-[16px]'>
-                    <div className='flex justify-between'>
-                        <p className='text-[#475569] text-[12px] leading-[15px] font-HelveticaNeueItalic'>Image name</p>
+                    <div className='flex justify-between' style={{display:"flex",justifyContent:"end"}}>
+                        {/* <p className='text-[#475569] text-[12px] leading-[15px] font-HelveticaNeueItalic'>Image name</p> */}
                         <div className='flex gap-[7px]'>
                             <img src={downloadIcon} alt="download" onClick={()=>setSaveModal(true)} />
                             <img src={deleleIcon} alt="delete" onClick={()=>setDeleteModal(true)} />

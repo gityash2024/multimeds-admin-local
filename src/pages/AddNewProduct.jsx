@@ -17,7 +17,7 @@ import Context from "../context/AppContext";
 import AddNewStock from "../components/AddNewStock";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import ProductCard from "../components/ProductCard";
-import { ADD_PRODUCT_TO_CATEGORY,UPDATE_PRODUCT, GET_COUPONS } from "../context/mutation";
+import { ADD_PRODUCT_TO_CATEGORY,UPDATE_PRODUCT,GET_ACTIVE_COUPONS } from "../context/mutation";
 import { DeleteForever, DeleteForeverOutlined } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -74,7 +74,7 @@ console.log(productData,'productData')
   const [updateProduct] = useMutation(UPDATE_PRODUCT);
   const [productImages, setProductImages] = useState( productData?.productImages||[]);
   const [points, setPoints] = useState(productData?.bulletPoints||[]);
-  const { data, refetch: refetchCoupons } = useQuery(GET_COUPONS);
+  const { data, refetch: refetchCoupons } = useQuery(GET_ACTIVE_COUPONS);
   const [selectedCoupon, setSelectedCoupon] = useState("");
   const [origin, setOrigin] = useState(productData?.origin||"");
   const [storage, setStorage] = useState(productData?.storage||"");
@@ -84,6 +84,24 @@ console.log(productData,'productData')
   const [couponId, setCouponId] = useState(productData?.coupon?.code||"");
   const {  data:categoriesData, refetch:refetchCategories } = useQuery(GET_CATEGORIES);
   const [loading,setLoading]=useState(false);
+  const [healthConcern, setHealthConcern] = useState(productData?.healthConcern||"");
+const [subCategory, setSubCategory] = useState(productData?.subCategory||"");
+const [healthConcernData]=useState(['respiratoryProblem','stomachProblem','bonesProblem','heartProblem','kidneyProblem']);
+const [subCategoryData]=useState(['medicine','device','essentials','overTheCounter']);
+// Convert health concern data into array of objects
+const formattedHealthConcernData = healthConcernData.map((item, index) => ({
+  id: index,
+  name: item?.replace(/([A-Z])/g, ' $1')?.toLowerCase() // Convert camelCase to space-separated words
+}));
+
+// Convert subcategory data into array of objects
+const formattedSubCategoryData = subCategoryData.map((item, index) => ({
+  id: index,
+  name: item?.replace(/([A-Z])/g, ' $1')?.toLowerCase() // Convert camelCase to space-separated words
+}));
+
+console.log('Formatted Health Concern Data:', formattedHealthConcernData);
+console.log('Formatted Subcategory Data:', formattedSubCategoryData);
   useEffect(()=>{
     let data=[]
     if(categoriesData){
@@ -109,7 +127,8 @@ console.log(productData,'productData')
     const [isChecked,setIsChecked] = useState(productData?.isPrescriptionNeeded||true);
 
   useEffect(() => {
-    setCoupons(data?.getCoupons?.coupons);
+    setCoupons(data?.getActiveCoupons?.coupons);
+    setCouponId( data?.getActiveCoupons?.coupons[0]?.id)
   }, [data]);
   useEffect(()=>{
       console.log(categoryId,"cate----------------goryId")
@@ -128,8 +147,16 @@ console.log(productData,'productData')
       prescriptionRequired: isChecked,
       productName: productName,
       published: option === 1 ? true : false,
+
       // discount:coupons?.filter((coupon)=>coupon?.id===couponId)[0]?.percentage || 0
     };
+    console.log(input?.couponId,permission)
+
+    if(!productData){
+      console.log(subCategory,subCategoryData)
+      input.subCategory=subCategory
+      input.healthConcern=healthConcern
+    }
     console.log(categoryId,"categoryId")
     if(!input?.productName || !categoryId|| !input?.origin|| !input?.storage|| !input?.composition){
       toast.error("Please fill all the required fields")
@@ -146,10 +173,11 @@ console.log(productData,'productData')
       toast.error("Add min 1 point , required")
       return
     }
-    if(!input?.couponId){
+    if(!input?.couponId || !permission){
       toast.error("Select coupon , required")
       return
     }
+
     if(!productData){
 
       const response = await addProductToCategory({
@@ -170,16 +198,16 @@ console.log(productData,'productData')
       let newData = stockData?.map(({ __typename, ...stock }) => {
         return {
           ...stock,
-          noOfUnits: 0,
-          weightPerUnit: 0,
-          boxMrp: 0,
-          noOfGrams: 0,
-          noOfKgs: 0,
-          manufacturingDate:new Date(Number(stock?.manufacturingDate)),
-          expiryDate:new Date(Number(stock?.expiryDate))
+          noOfUnits: stock.noOfUnits ?? 0,
+          weightPerUnit: stock.weightPerUnit ?? 0,
+          boxMrp: stock.boxMrp ?? 0,
+          noOfGrams: stock.noOfGrams ?? 0,
+          noOfKgs: stock.noOfKgs ?? 0,
+          manufacturingDate: stock?.manufacturingDate ? new Date(Number(stock.manufacturingDate)) : null,
+          expiryDate: stock?.expiryDate ? new Date(Number(stock.expiryDate)) : null
         };
       });
-
+      
       let newPoints = points?.map(({ __typename, ...point }) => {
         return {
           ...point
@@ -388,8 +416,29 @@ console.log(productData,'productData')
                         // errorMsg={errors.productName}
                         // isError={errors?.productName}
                       />
+                      
 
           </div>
+        {!productData&&  <div className="flex gap-6">
+
+          <ProfileInput
+              title="Add Sub Category (optional)"
+              value={subCategory}
+              setValue={(value) => setSubCategory(value)}
+              big
+              dropdownField
+              dropdownList={formattedSubCategoryData}
+            />
+          <ProfileInput
+              title="Add Health Concern (optional)"
+              value={healthConcern}
+              setValue={(value) => setHealthConcern(value)}
+              big
+              dropdownField
+              dropdownList={formattedHealthConcernData}
+            />
+
+          </div>}
         </div>
       </div>
 

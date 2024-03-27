@@ -5,6 +5,7 @@ import downloadIcon from '../assets/download-arrow.svg';
 import deleteIcon from '../assets/deleteDark.svg';
 import { toast } from 'react-toastify';
 import { UPDATE_BANNER } from '../context/mutation';
+import LoaderOverlay from './loadinOverlay';
 
 export const CREATE_BANNER = gql`
   mutation createBanner($url: String!, $mobileUrl: String!, $index: Int!) {
@@ -30,8 +31,9 @@ export default function CreateBannerModal({ setOpenCreateBannerModal, refetchBan
   const fileRef = useRef(null);
   const [createBanner] = useMutation(CREATE_BANNER);
   const [updateBanner] = useMutation(UPDATE_BANNER);
-
+const[loading,setLoading]=useState(false)
   const handleFileUpload = async (file) => {
+    setLoading(true)
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -40,7 +42,7 @@ export default function CreateBannerModal({ setOpenCreateBannerModal, refetchBan
         body: formData,
       });
       if (!response.ok) {
-        throw new Error(`Failed to upload file: ${response.statusText}`);
+        throw new Error(`File Too Large`);
       }
       const responseData = await response.json();
       const uploadedUrl = responseData.publicUrl;
@@ -48,7 +50,10 @@ export default function CreateBannerModal({ setOpenCreateBannerModal, refetchBan
       setMobileUrl(uploadedUrl);
       setIsSavingDisabled(false);
     } catch (error) {
+      toast.error('Error : File Too Large');
       console.error('Error uploading file:', error.message);
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -56,6 +61,7 @@ export default function CreateBannerModal({ setOpenCreateBannerModal, refetchBan
     if (!url || !mobileUrl) {
       return;
     }
+    setLoading(true);
     try {
       await createBanner({ variables: { url, mobileUrl, index: length + 1 } });
       toast.success('Banner Added successfully!');
@@ -64,6 +70,8 @@ export default function CreateBannerModal({ setOpenCreateBannerModal, refetchBan
     } catch (error) {
       console.error('Error saving banner:', error.message);
       toast.error(error.message);
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -71,6 +79,7 @@ export default function CreateBannerModal({ setOpenCreateBannerModal, refetchBan
     if (!url || !mobileUrl) {
       return;
     }
+    setLoading(true);
     try {
       await updateBanner({ variables: { url, mobileUrl, index: length,id: item?.id } });
       toast.success('Banner Updated successfully!');
@@ -79,6 +88,8 @@ export default function CreateBannerModal({ setOpenCreateBannerModal, refetchBan
     } catch (error) {
       console.error('Error updating banner:', error.message);
       toast.error("Error While updating banner!!");
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -106,9 +117,9 @@ export default function CreateBannerModal({ setOpenCreateBannerModal, refetchBan
           <button className="text-[24px]" onClick={() => setOpenCreateBannerModal(false)}>&times;</button>
         </div>
         <div className="px-[16px]">
-          <div className="flex justify-between">
-            <p className="text-[#475569] text-[12px] leading-[15px] font-HelveticaNeueItalic">Image name</p>
-            <div className="flex gap-[7px]">
+          <div className="flex justify-between" style={{display:"flex",justifyContent:"end"}}>
+            {/* <p className="text-[#475569] text-[12px] leading-[15px] font-HelveticaNeueItalic">Image name</p> */}
+            <div className="flex gap-[7px] " >
               <img src={downloadIcon} alt="download" onClick={() => setSaveModal(true)} />
               <img src={deleteIcon} alt="delete" onClick={() => setDeleteModal(true)} />
             </div>
@@ -156,6 +167,7 @@ export default function CreateBannerModal({ setOpenCreateBannerModal, refetchBan
           </div>
         </div>}
       </div>
+      {loading &&<LoaderOverlay/>}
     </div>
   );
 }

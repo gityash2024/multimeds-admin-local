@@ -78,11 +78,14 @@ const Users = () => {
 
 
   const handleSearch = (e) => {
+    console.log(e.target.value);
+
     setSearchQuery(e.target.value);
   };
+  console.log(departmentsUsers,searchQuery)
   const filteredUsers = searchQuery?.trim() ? 
   departmentsUsers?.filter((user) => 
-    user.name?.toLowerCase()?.includes(searchQuery?.toLowerCase())
+    user.fullName?.toLowerCase()?.includes(searchQuery?.toLowerCase())
   ) : departmentsUsers;
 
   return (

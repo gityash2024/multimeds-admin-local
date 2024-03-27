@@ -177,6 +177,7 @@ export default function CategoryPage() {
     data,
     refetch,
   } = useQuery(GET_SEGMENTS);
+
   const [segmentList, setSegmentList] = useState([]);
   const [productListCategoryWise, setProductListForCategory] = useState([]);
   const [loading, setLoading] = useState(false);

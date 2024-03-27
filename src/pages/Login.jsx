@@ -188,9 +188,9 @@ const LoginForm = ({
       {isLoading ? "Processing..." : "LOGIN"}
     </button>
 
-    <h5 onClick={handleToggle} className="cursor-pointer">
+    {/* <h5 onClick={handleToggle} className="cursor-pointer">
       Don't have an account? Register
-    </h5>
+    </h5> */}
   </>
 );
 

@@ -4,7 +4,9 @@ import UserPicture from "../assets/authorImage.png";
 import { Link } from "react-router-dom";
 
 const UserCell = (tableData,key) => {
-
+const toUpperCase = (str) => {
+  return str?.toUpperCase();
+}
   return (
     <div key={key} className="flex md:flex-row flex-col md:justify-between gap-1 border-b border-[#E2E8F0] bg-white md:py-6 md:px-12 p-3 hover:bg-[#DBEAFE]">
       <Link
@@ -15,7 +17,7 @@ const UserCell = (tableData,key) => {
         <img src={UserPicture} alt="user image" className="w-6 h-6" />
 
         <h1 className="md:text-sm text-xs font-HelveticaNeueMedium text-[#0F172A]">
-          {tableData?.tableData?.fullName||'--'}
+          {toUpperCase(tableData?.tableData?.fullName)||'--'}
         </h1>
       </Link>
 

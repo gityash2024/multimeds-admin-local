@@ -440,9 +440,8 @@ const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
                 className="cursor-pointer flex justify-between text-[#334155] text-[14px] font-[500] leading-[17.5px] px-[48px] py-[24px] border-t border-[#E2E8F0] hover:bg-[#DBEAFE]"
                 key={item.id}
                 onClick={() =>
-                  navigate("/home/customer_profile", {
-                    state: { userDetails: item },
-                  })
+                 { localStorage.setItem("userDetails", JSON.stringify(item));
+                  navigate("/home/customer_profile");}
                 }
               >
                 <p className="flex-1 text-left">{item.fullName || "--"}</p>

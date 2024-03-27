@@ -129,7 +129,7 @@ export default function WalletAndCoupons() {
             </div>
         </div>
       </div>
-      <div>
+      {/* <div>
         <div className='flex justify-between items-center mb-[16px]'>
           <div className='text-[18px] font-[700] leading-[22.5px] tracking-[0.414px]'>
             Coupon Mangment
@@ -159,7 +159,7 @@ export default function WalletAndCoupons() {
                     )})}
             </div>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

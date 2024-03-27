@@ -16,6 +16,7 @@ const DELETE_PRODUCT=gql`
 export default function CategoryCard(props) {
   console.log(props?.productData)
   const data=props?.productData
+  console.log(data)
   const [deleteProduct] = useMutation(DELETE_PRODUCT);
     const navigate = useNavigate();
     const { setProductAddType } = useContext(Context);
@@ -59,6 +60,9 @@ export default function CategoryCard(props) {
     });
 
   }
+  const toUpperCase = (str) => {
+    return str?.toUpperCase();
+  }
     return (
       <div>
         {data && data.stocks.map((item) => (
@@ -72,10 +76,10 @@ export default function CategoryCard(props) {
               <div className='flex justify-between w-full'>
                 <div className='flex flex-col gap-[4px]'>
                   <div className='flex gap-[8px] items-center'>
-                    <h1>{props?.productData?.productName}</h1>
+                    <h1>{toUpperCase(props?.productData?.productName)}</h1>
                     {/* {props.sellingFast ? <div className='bg-[#FEF2F2] text-[#EF4444] text-[12px] font-HelveticaNeueMedium leading-[15px] p-[4px] rounded-[4px]'>Selling out soon!</div> : props.type !== 2 && <div className='bg-[#F7FEE7] text-[#65A30D] text-[12px] font-HelveticaNeueMedium leading-[15px] p-[4px] rounded-[4px]'>Newly Added</div>} */}
                   </div>
-                  <p className='text-[#64748B] text-[12px] leading-[15px]j italic'>Added on {formatDate(item?.createdAt)} </p>
+                  <p className='text-[#64748B] text-[12px] leading-[15px]j italic'>Added on {formatDate(data?.createdAt)} </p>
                   {!(props.type === 2) ? (
                     <div className='flex gap-[4px] items-center text-[#64748B] text-[12px] leading-[15px]'>
                       <p>{data?.composition}</p>

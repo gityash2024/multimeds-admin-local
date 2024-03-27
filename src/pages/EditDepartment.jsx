@@ -32,6 +32,7 @@ const [loading,setLoading]=useState(false)
     changePermissions: departmentData?.permissions?.includes("changePermissions") ? true : false,
   });
   const [updateDepartment, { loading:updateLoading }] = useMutation(UPDATE_DEPARTMENT);
+  const [deleteDepartmentMutation] = useMutation(DELETE_DEPARTMENT);
 
   const[departmentUsers,setDepartmentUser]=useState([]);
   const handlePermissionChange = (key, value) => {
@@ -66,11 +67,12 @@ const [loading,setLoading]=useState(false)
     }
   }, [departmentData?.id]);
   const handleSearch = (e) => {
+    console.log(e.target.value);
     setSearchQuery(e.target.value);
   };
   const filteredUsers = searchQuery?.trim() ? 
   departmentUsers?.filter((user) => 
-    user.name?.toLowerCase()?.includes(searchQuery?.toLowerCase())
+    user.fullName?.toLowerCase()?.includes(searchQuery?.toLowerCase())
   ) : departmentUsers;
 
   const handleSubmit = () => {
@@ -111,25 +113,25 @@ const [loading,setLoading]=useState(false)
       });
     setLoading(false)
   };
+  
 
-  const handleDelete = async() => {
-    return;
+  const handleDelete = async () => {
+    console.log("Delete", departmentData?.id);
     setLoading(true);
     try {
-      const { data } = await client.query({
-        query: DELETE_DEPARTMENT,
-        variables: { input: departmentData?.id }
-      });
-      localStorage.setItem("isUserDeleted", true);
-      toast.success("Department deleted successfully.");
-      navigate("/home/users");
+        const { data } = await deleteDepartmentMutation({
+          variables: { deptId: departmentData?.id }
+        });
+        localStorage.setItem("isUserDeleted", true);
+        toast.success("Department deleted successfully.");
+        navigate("/home/users");
     } catch (error) {
-      console.error('Error deleting department:', error);
-      toast.error("An error occurred while deleting the department.");
-    }finally{
-      setLoading(false);
+        console.error('Error deleting department:', error);
+        toast.error("An error occurred while deleting the department.");
+    } finally {
+        setLoading(false);
     }
-  };
+};
 
   return (
     <div className="w-full flex flex-col md:p-12 py-8 px-3 md:gap-12 gap-6 bg-white">
@@ -158,8 +160,8 @@ const [loading,setLoading]=useState(false)
 
           {!notAdmin && (
             <button
-              // onClick={() => setIsDeleteModal(true)}
-              style={{cursor:"not-allowed"}}
+              onClick={() => setIsDeleteModal(true)}
+              // style={{cursor:"not-allowed"}}
               className="md:w-[10.75rem] w-full text-sm font-HelveticaNeueMedium bg-white text-[#EF4444] border border-[#EF4444] md:py-3 py-2 px-4 rounded"
             >
               Delete Department

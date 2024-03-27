@@ -8,7 +8,7 @@ import Context from "../context/AppContext";
 
 export default function CustomerProfile() {
   const location=useLocation();
-  const userDetails=location.state?.userDetails;
+  const userDetails=localStorage.getItem("userDetails")?JSON.parse(localStorage.getItem("userDetails")):{};
   const [others, setOthers] = useState(false);
   const {
     showCouponPopUp,
@@ -33,9 +33,9 @@ export default function CustomerProfile() {
               Customer Details
             </h1>
             <div className="flex gap-[8px]">
-             {currentPathname === "customer_profile" && <button className="text-white text-[16px] font-[500] leading-[20px] bg-[#031B89] px-[16px] py-[12px] rounded-[4px]" onClick={()=>setSaveModal(true)}>
+             {/* {currentPathname === "customer_profile" && <button className="text-white text-[16px] font-[500] leading-[20px] bg-[#031B89] px-[16px] py-[12px] rounded-[4px]" onClick={()=>setSaveModal(true)}>
                 Save Changes
-              </button>}
+              </button>} */}
               <button className="text-[#EF4444] text-[16px] font-[500] leading-[20px] border-[2px] border-[#EF4444] px-[16px] py-[12px] rounded-[4px]" onClick={() => setShowDeletePopUp('customer')}>
                 Delete Customer
               </button>
@@ -49,7 +49,7 @@ export default function CustomerProfile() {
                   : "text-[#64748B] bg-[#F8FAFC]"
               }`}
               onClick={() => {
-                navigate("/home/customer_profile", { state: { userDetails } });
+                navigate("/home/customer_profile");
                 const pathname = window.location.pathname.split("/");
                 setCurrentPathname(pathname[pathname.length - 1]);
               }}

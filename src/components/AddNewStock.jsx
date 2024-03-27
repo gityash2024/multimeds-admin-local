@@ -436,7 +436,7 @@ export default function AddNewStock(props) {
               </div>
               <div>
                 <p className="flex gap-[4px] text-[10px] font-HelveticaNeueThin leading-[12.5px] italic mb-[4px]">
-                  <p className="text-[#64748B] ">Enter MRP per sheet</p>
+                  <p className="text-[#64748B] ">Enter MRP</p>
                   <span className="text-red-500">*</span>
                 </p>
                 <input
