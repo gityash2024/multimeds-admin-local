@@ -103,9 +103,9 @@ export default function CategoryCard(props) {
               </div>
             </div>
             <div className='min-h-[14px] flex justify-end items-center gap-[16px] w-full'>
-              {!data?.published && <button className='text-[#031B89] text-[14px] leading-[17.5px] bg-white h-[26px] w-[87px] border-2 border-[#031B89] rounded-[4px]' style={{cursor:"not-allowed"}}>Publish</button>}
+              {/* {!data?.published && <button className='text-[#031B89] text-[14px] leading-[17.5px] bg-white h-[26px] w-[87px] border-2 border-[#031B89] rounded-[4px]' style={{cursor:"not-allowed"}}>Publish</button>} */}
               { <button className='text-[#031B89] text-[14px] leading-[17.5px] bg-white h-[26px] w-[65px] rounded-[4px[' onClick={fun1}>Edit</button>}
-              {data?.archived&& <button className='text-[#031B89] text-[14px] leading-[17.5px] bg-white h-[26px] w-[87px] border-2 border-[#031B89] rounded-[4px]' style={{cursor:"not-allowed"}}>Restore</button>}
+              {/* {data?.archived&& <button className='text-[#031B89] text-[14px] leading-[17.5px] bg-white h-[26px] w-[87px] border-2 border-[#031B89] rounded-[4px]' style={{cursor:"not-allowed"}}>Restore</button>} */}
                <button className='text-[#031B89] text-[14px] leading-[17.5px] bg-white h-[26px] w-[65px] rounded-[4px]' onClick={handleDelete}>Delete</button>
             </div>
           </div>
