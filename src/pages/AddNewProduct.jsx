@@ -61,7 +61,7 @@ const AddNewProduct = () => {
   const productData=location?.state?.productData;
 console.log(productData,'productData')
   const navigate = useNavigate();
-  const [option, setOption] = useState(1);
+  const [option, setOption] = useState(productData?.published ? 1 : 0);
   const [newStockModal, setNewStockModal] = useState(undefined);
   const [sortBy, setSortBy] = useState("All");
   const { productAddType } = useContext(Context);
