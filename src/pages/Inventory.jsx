@@ -75,6 +75,7 @@ query{getCategories{
       discount
       manufacturer
       maxRetailPrice
+      
 
     }
     createdAt

@@ -68,6 +68,8 @@ query {
       productForm
       consumeType
       unitsInPack
+      healthConcern
+      subCategory
       boxContent
       size
       scentOrFlavour
@@ -186,7 +188,9 @@ export default function CategoryPage() {
   const [createdDateFilter, setCreatedDateFilter] = useState('');
   const [viewFilter, setViewFilter] = useState('');
   const [filterProduct, setFilterdProducts] = useState([]);
-
+useEffect(() => {
+  console.log(filterProduct)
+},[filterProduct])
   const handleUpdate = async () => {
     setLoading(true);
     const { data } = await updateCategory({
@@ -458,7 +462,7 @@ useEffect(() => {
         </div>
       </div>
       {/* Product list */}
-      <div className="grid md:grid-cols-2 gap-y-[24px] gap-x-[16px]">
+      <div className="grid md:grid-cols-2 gap-y-[24px] gap-x-[16px]" style={{maxHeight:"460px",overflow:"scroll",scrollBehavior:"smooth"}}>
         {filterProduct?.map((data) => {
           return (
             <CategoryCard

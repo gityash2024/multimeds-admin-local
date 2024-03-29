@@ -556,7 +556,7 @@ console.log('Formatted Subcategory Data:', formattedSubCategoryData);
 
             <h2 className="text-sm text-[#0F172A]">
               Star the primary Image for the product. Select upto 10 images
-              (jpg, gif, mp4)
+              (jpg,png,jpeg)
             </h2>
           </div>
 

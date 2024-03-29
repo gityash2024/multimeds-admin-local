@@ -100,66 +100,94 @@ export default function AddNewStock(props) {
     let valid = true;
     const newErrors = {};
   
+    // Manufacturer validation
     if (!manufacturer.trim()) {
       newErrors.manufacturer = "Manufacturer is required";
       valid = false;
     }
   
+    // Boxes validation
     if (type === "Boxes") {
-      if (!boxes.trim()) {
-        newErrors.boxes = "Box number is required";
+      if (!boxes.trim() || isNaN(boxes)) {
+        newErrors.boxes = "Box number is required and must be numeric";
         valid = false;
       }
-      if (!sheets.trim()) {
-        newErrors.sheets = "Sheet number is required";
+      if (!sheets.trim() || isNaN(sheets)) {
+        newErrors.sheets = "Sheet number is required and must be numeric";
         valid = false;
       }
-      if (!noOfTabletsPerSheet.trim()) {
-        newErrors.noOfTabletsPerSheet = "Number of tablets per sheet is required";
+      if (!noOfTabletsPerSheet.trim() || isNaN(noOfTabletsPerSheet)) {
+        newErrors.noOfTabletsPerSheet = "Number of tablets per sheet is required and must be numeric";
         valid = false;
       }
-    } else if (type === "Units") {
-      if (!units.trim()) {
-        newErrors.units = "Number of units is required";
+    }
+  
+    // Units validation
+    if (type === "Units") {
+      if (!units.trim() || isNaN(units)) {
+        newErrors.units = "Number of units is required and must be numeric";
         valid = false;
       }
-      if (!unitWeight.trim()) {
-        newErrors.unitWeight = "Unit weight is required";
+      if (!unitWeight.trim() || isNaN(unitWeight)) {
+        newErrors.unitWeight = "Unit weight is required and must be numeric";
         valid = false;
       }
-    } else if (type === "Grams" && !grams.trim()) {
-      newErrors.grams = "Grams is required";
-      valid = false;
-    } else if (type === "Kilograms" && !kgs.trim()) {
-      newErrors.kgs = "Kilograms is required";
+    }
+  
+    // Grams validation
+    if (type === "Grams" && (!grams.trim() || isNaN(grams))) {
+      newErrors.grams = "Grams is required and must be numeric";
       valid = false;
     }
   
-    if (!mrpPerSheet.trim()) {
-      newErrors.mrpPerSheet = "MRP per sheet is required";
+    // Kilograms validation
+    if (type === "Kilograms" && (!kgs.trim() || isNaN(kgs))) {
+      newErrors.kgs = "Kilograms is required and must be numeric";
       valid = false;
     }
+  
+    // MRP per sheet validation
+    if (!mrpPerSheet.trim() || isNaN(mrpPerSheet)) {
+      newErrors.mrpPerSheet = "MRP per sheet is required and must be numeric";
+      valid = false;
+    }
+  
+    // Box MRP validation
+    if (!boxMrp.trim() || isNaN(boxMrp)) {
+      newErrors.boxMrp = "Box MRP is required and must be numeric";
+      valid = false;
+    }
+  
+    // Batch number validation
     if (!batchNumber.trim()) {
       newErrors.batchNumber = "Batch number is required";
       valid = false;
     }
+  
+    // Manufacturing date validation
     if (!manufacturingDate.trim()) {
-      newErrors.manufacturingDate = "Manufacturer date is required";
+      newErrors.manufacturingDate = "Manufacturing date is required";
       valid = false;
     }
+  
+    // Expiry date validation
     if (!expiryDate.trim()) {
       newErrors.expiryDate = "Expiry date is required";
       valid = false;
     }
   
-    if (!boxMrp.trim()) {
-      newErrors.boxMrp = "Box MRP is required";
+    // Date comparison validation
+    const manufacturingDateObj = new Date(manufacturingDate);
+    const expiryDateObj = new Date(expiryDate);
+    if (manufacturingDateObj >= expiryDateObj) {
+      newErrors.expiryDate = "Expiry date must be after the manufacturing date";
       valid = false;
     }
   
     setErrors(newErrors);
     return valid;
   };
+  
   
   const handleSave = () => {
     if (validateForm()) {

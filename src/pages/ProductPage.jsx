@@ -222,15 +222,15 @@ const ProductPage = () => {
             </h1>
 
             <h2 className="text-sm text-[#0F172A]">
-              Star the primary Image for the product. Select upto 10 images
-              (jpg, gif, mp4)
+            Star the primary Image for the product. Select upto 10 images
+              (jpg,png,jpeg)
             </h2>
           </div>
 
           <button className="h-12 text-sm font-HelveticaNeueMedium text-[#031B89] flex gap-2 items-center py-2 px-3 rounded border border-[#031B89] bg-white" onClick={()=>{fileRef.current.click();}}>
             Upload Product Images
           </button>
-          <input type="file" className="hidden" ref={fileRef} />
+          <input type="file" accept="image/*"   className="hidden" ref={fileRef} />
         </div>
 
         <div className="flex gap-4 items-center">

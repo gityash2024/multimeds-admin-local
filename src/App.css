@@ -45,3 +45,20 @@ body {
   max-height: 489px !important;
   overflow: scroll;
 }
+.coupon-card-container {
+  transition: transform 0.1s ease-in-out;
+  will-change: transform;
+}
+
+.coupon-card-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.status-tag {
+  display: block;
+}
+
+.discount-tag {
+  display: block;
+}

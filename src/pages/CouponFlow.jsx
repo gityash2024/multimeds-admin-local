@@ -524,10 +524,10 @@ export default function CouponFlow() {
           </p>
         </div>
       ) : (
-        <div className="w-full grid md:grid-cols-2 gap-y-[4px] gap-x-[16px] rounded-[8px] mt-[48px]">
+        <div className="w-full grid md:grid-cols-2 gap-y-[14px] gap-x-[16px] rounded-[8px] mt-[48px]">
           {filteredCouponsData?.map((item) => (
             <div
-              className=" flex flex-col gap-[8px] border border-[#DBEAFE] rounded-[8px] p-[16px]"
+              className=" flex flex-col gap-[8px] border border-[#DBEAFE] rounded-[8px] "
               key={item.id}
             >
               <CouponCard

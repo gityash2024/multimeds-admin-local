@@ -63,6 +63,9 @@ export default function CategoryCard(props) {
   const toUpperCase = (str) => {
     return str?.toUpperCase();
   }
+  function formatTextToUpperCase(text) {
+    return text?.toUpperCase() || '';
+  }
   return (
     <div>
       {data && data.stocks.map((item) => (
@@ -102,8 +105,19 @@ export default function CategoryCard(props) {
             </div>
           </div>
           <div className='min-h-[14px] flex justify-end items-center gap-[16px] w-full'>
+          {data?.healthConcern && (
+  <div className='bg-sky-500 text-white text-[12px] font-medium leading-[15px] px-[8px] py-[2px] rounded-[4px]'>
+    {toUpperCase(data?.healthConcern)}
+  </div>
+)}
+{data?.subCategory && (
+  <div className='bg-sky-500 text-white text-[12px] font-medium leading-[15px] px-[8px] py-[2px] rounded-[4px]'>
+    {toUpperCase(data?.subCategory)}
+  </div>
+)}
+
             {data?.published && <div className='text-[#10B981] bg-[#ECFDF5] text-[12px] font-medium leading-[15px] px-[8px] py-[2px] rounded-[4px]'>Published</div>}
-            {data?.archived && <div className='text-[#F97316] bg-[#FFF7ED] text-[12px] font-medium leading-[15px] px-[8px] py-[2px] rounded-[4px]'>Archived</div>}
+            {!data?.published && <div className='text-[#F97316] bg-[#FFF7ED] text-[12px] font-medium leading-[15px] px-[8px] py-[2px] rounded-[4px]'>Archived</div>}
             <button className='text-[#031B89] text-[14px] leading-[17.5px] bg-white h-[26px] w-[65px] rounded-[4px]' onClick={fun1}>Edit</button>
             <button className='text-[#031B89] text-[14px] leading-[17.5px] bg-white h-[26px] w-[65px] rounded-[4px]' onClick={handleDelete}>Delete</button>
           </div>
