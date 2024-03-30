@@ -1,15 +1,21 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import mapimage from "../assets/mapimage.png";
+import { useQuery, useMutation, gql } from "@apollo/client";
+
 import LocationIcon from "../assets/Location.svg";
 import HomeImage from "../assets/Home.svg";
 import WorkImage from "../assets/Work.svg";
 import Context from "../context/AppContext";
 
+
+
 export default function CustomerProfile() {
   const location=useLocation();
   const userDetails=localStorage.getItem("userDetails")?JSON.parse(localStorage.getItem("userDetails")):{};
   const [others, setOthers] = useState(false);
+
+
   const {
     showCouponPopUp,
     setShowCouponPopUp,
@@ -179,149 +185,7 @@ export default function CustomerProfile() {
           </div>
         </>
       )}
-      {showAddressPopUp && (
-        <>
-          <div
-            className="fixed top-0 left-0 bottom-0 right-0 bg-black/30"
-            onClick={() => setShowAddressPopUp(false)}
-          ></div>
-          <div className="fixed flex-col top-1/2 left-1/2 -translate-x-[50%] -translate-y-[50%] w-[724px] bg-white rounded-[8px]">
-            <div className="flex justify-between items-center p-[16px]">
-              <div>
-                <h1 className="text-[16px] font-[700] leading-[20px]">
-                  Add a new address
-                </h1>
-              </div>
-              <div
-                className="cursor-pointer text-xl"
-                onClick={() => setShowAddressPopUp(false)}
-              >
-                &times;
-              </div>
-            </div>
-            <div className="px-[16px] mb-[16px]">
-              <div className="flex items-center gap-[8px] mb-[12px]">
-                <p className="w-full px-[6px] py-[4px] bg-[#E2E8F0]/20 flex justify-between items-center rounded-[4px]">
-                  <span className="text-[#94A3B8] text-[10px] font-[400] italic leading-[12.5px]">
-                    Set Location
-                  </span>
-                  <img src={LocationIcon} alt="location" />
-                </p>
-                <button className="text-[#031B89] text-[14px] font-[500] leading-[17.5px] border-2 border-[#031B89] w-[94px] px-[4px] py-[8px] rounded-[4px]">
-                  Select
-                </button>
-              </div>
-              <img src={mapimage} alt="map" />
-            </div>
-            <div className="flex flex-col gap-[16px] px-[16px]">
-              <div className="flex gap-[16px]">
-                <div className="flex-1">
-                  <p className="text-[#64748B] text-[10px] font-[300] leading-[12.5px] italic mb-[4px]">
-                    House Number
-                  </p>
-                  <input
-                    className="outline-none w-full text-[14px] font-[300] leading-[17.5px] p-[12px] border border-[#64748B] rounded-[4px]"
-                    type="text"
-                    placeholder="House number"
-                  />
-                </div>
-                <div className="flex-1">
-                  <p className="text-[#64748B] text-[10px] font-[300] leading-[12.5px] italic mb-[4px]">
-                    Apartment/Building name
-                  </p>
-                  <input
-                    className="outline-none w-full text-[14px] font-[300] leading-[17.5px] p-[12px] border border-[#64748B] rounded-[4px]"
-                    type="text"
-                    placeholder="Apartment name"
-                  />
-                </div>
-              </div>
-              <div>
-                <p className="text-[#64748B] text-[10px] font-[300] leading-[12.5px] italic mb-[4px]">
-                  Enter Street Name
-                </p>
-                <input
-                  className="outline-none w-full text-[14px] font-[300] leading-[17.5px] p-[12px] border border-[#64748B] rounded-[4px]"
-                  type="text"
-                  placeholder="Enter street name"
-                />
-              </div>
-              <div className="flex gap-[16px]">
-                <div className="flex-1">
-                  <p className="text-[#64748B] text-[10px] font-[300] leading-[12.5px] italic mb-[4px]">
-                    Pincode
-                  </p>
-                  <input
-                    className="outline-none w-full text-[14px] font-[300] leading-[17.5px] p-[12px] border border-[#64748B] rounded-[4px]"
-                    type="text"
-                    placeholder="Pincode"
-                  />
-                </div>
-                <div className="flex-1">
-                  <p className="text-[#64748B] text-[10px] font-[300] leading-[12.5px] italic mb-[4px]">
-                    City
-                  </p>
-                  <input
-                    className="outline-none w-full text-[14px] font-[300] leading-[17.5px]  p-[12px] border border-[#64748B] rounded-[4px]"
-                    type="text"
-                    placeholder="City"
-                  />
-                </div>
-                <div className="flex-1">
-                  <p className="text-[#64748B] text-[10px] font-[300] leading-[12.5px] italic mb-[4px]">
-                    State
-                  </p>
-                  <input
-                    className="outline-none w-full text-[14px] font-[300] leading-[17.5px]  p-[12px] border border-[#64748B] rounded-[4px]"
-                    type="text"
-                    placeholder="State"
-                  />
-                </div>
-              </div>
-              <div>
-                <p className="text-[10px] font-[300] leading-[12.5px] italic mb-[4px]">
-                  Select a label:{" "}
-                </p>
-                <div className="flex gap-[16px]">
-                  {!others && (
-                    <>
-                      <button className="flex items-center justify-center gap-[4px] border-2 border-[#FBA79B] w-[132px] rounded-[49px] px-[4px] py-[8px] text-[#FBA79B] hover:bg-[#FBA79B] hover:text-white">
-                        <img src={HomeImage} alt="home" />
-                        <span className=" text-[14px] font-[500] leading-[17.5px]">
-                          Home
-                        </span>
-                      </button>
-                      <button className="flex items-center justify-center gap-[4px] border-2 border-[#FBA79B] w-[132px] rounded-[49px] px-[4px] py-[8px] text-[#FBA79B] hover:bg-[#FBA79B] hover:text-white">
-                        <img src={WorkImage} alt="home" />
-                        <span className=" text-[14px] font-[500] leading-[17.5px]">
-                          Work
-                        </span>
-                      </button>
-                    </>
-                  )}
-                  <button
-                    onClick={() => {
-                      setOthers((prev) => !prev);
-                    }}
-                    className="border-2 border-[#FBA79B] w-[132px] rounded-[49px] px-[4px] py-[8px] text-[#FBA79B] hover:bg-[#FBA79B] hover:text-white"
-                  >
-                    <span className="text-[14px] font-[500] leading-[17.5px]">
-                      Others
-                    </span>
-                  </button>
-                  {others && <input type="text" placeholder="Add Name" />}
-                </div>
-              </div>
-              <button
-                className="bg-[#031B89] text-white text-[16px] font-[500] leading-[20px] px-[4px] py-[12px] w-full mb-[16px] rounded-[4px]"
-                onClick={() => setShowAddressPopUp(false)}
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </>
-      )}
+   
       {showDeletePopUp && (
         <>
           <div

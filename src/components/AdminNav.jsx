@@ -40,7 +40,7 @@ const AdminNav = () => {
   const [isActive, setIsActive] = useState("dashboard");
 
   return (
-    <div className="w-fit h-[57rem] bg-[#031B89] flex flex-col justify-between">
+    <div className="w-fit h-[60rem] bg-[#031B89] flex flex-col justify-between">
       <div className="py-12 px-4 flex flex-col gap-12">
         {/* Header */}
         <div

@@ -603,14 +603,14 @@ console.log('Formatted Subcategory Data:', formattedSubCategoryData);
             );
           })}
 
-          <button
+        {productImages?.length < 10 &&  <button
             className="rounded-full bg-[#7487FF] p-3 w-12 h-12"
             onClick={() => {
               fileRef.current.click();
             }}
           >
             <img src={MenuAddPlusWhite} alt="plus" />
-          </button>
+          </button>}
         </div>
       </div>
 

@@ -62,3 +62,6 @@ body {
 .discount-tag {
   display: block;
 }
+.slick-arrow{
+  display: none !important;
+}

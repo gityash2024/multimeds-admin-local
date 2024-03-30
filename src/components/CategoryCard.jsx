@@ -69,7 +69,7 @@ export default function CategoryCard(props) {
   return (
     <div>
       {data && data.stocks.map((item) => (
-        <div className={`flex flex-col justify-center items-center gap-[16px] w-full min-h-[170px] px-[24px] py-[16px] rounded-[8px] shadow-md border ${props.type === 1 ? 'bg-[#F1F5F9] border-[#E2E8F0] border-dashed' : props.type === 2 ? 'bg-[#E2E8F0] border-[#94A3B8]' : 'bg-white border-[#E2E8F0]'}`}>
+        <div className={`flex mb-2 flex-col justify-center items-center gap-[16px] w-full min-h-[170px] px-[24px] py-[16px] rounded-[8px] shadow-md border ${props.type === 1 ? 'bg-[#F1F5F9] border-[#E2E8F0] border-dashed' : props.type === 2 ? 'bg-[#E2E8F0] border-[#94A3B8]' : 'bg-white border-[#E2E8F0]'}`}>
           <div className='flex justify-between min-h-[14px] w-full'>
             <div className='text-[12px]'>{props.type === 1 && 'DRAFT'}{props.type === 2 && 'ARCHIVED'}</div>
             <p className='text-[10px] leading-[12.5px] font-HelveticaNeueThin italic'>Last updated {formatDate(data?.updatedAt)}</p>

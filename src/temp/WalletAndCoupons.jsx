@@ -9,74 +9,7 @@ export default function WalletAndCoupons() {
   const [showPopUp, setShowPopUp] = useState(true);
   const [dateRange, setDataRange] = useState('This Week');
   const navigate = useNavigate();
-  const data = [
-    {
-        id: '1',
-        name: 'Sanjay R',
-        phoneNumber: '9801099882',
-        emailId: 'xyz@gmail.com',
-        pincode: '560045',
-        dateCreated: '03/11/2023',
-        transactionId: '#299120103',
-        date: '13th September 2023',
-        amount: '1300',
-        type: 'Refund:Cancelled Order',
-        transferMoney: 'In'
-        
-    },
-    {
-        id: '2',
-        name: 'Sanjay R',
-        phoneNumber: '9801099882',
-        emailId: 'xyz@gmail.com',
-        pincode: '560045',
-        dateCreated: '03/11/2023',
-        transactionId: '#299120104',
-        date: '13th September 2023',
-        amount: '103',
-        type: 'Cashback',
-        transferMoney: 'In'
-    },
-    {
-        id: '3',
-        name: 'Sanjay R',
-        phoneNumber: '9801099882',
-        emailId: 'xyz@gmail.com',
-        pincode: '560045',
-        dateCreated: '03/11/2023',
-        transactionId: '#299120105',
-        date: '13th September 2023',
-        amount: '290',
-        type: 'Referal',
-        transferMoney: 'In'
-    },
-    {
-        id: '4',
-        name: 'Sanjay R',
-        phoneNumber: '9801099882',
-        emailId: 'xyz@gmail.com',
-        pincode: '560045',
-        dateCreated: '03/11/2023',
-        transactionId: '#299120106',
-        date: '13th September 2023',
-        amount: '529',
-        type: 'Money used in Order',
-        transferMoney: 'Out'
-    },
-    {
-        id: '5',
-        name: 'Sanjay R',
-        phoneNumber: '9801099882',
-        emailId: 'xyz@gmail.com',
-        pincode: '560045',
-        dateCreated: '03/11/2023',
-        transactionId: '#299120107',
-        date: '13th September 2023',
-        amount: '83',
-        type: 'Money use in Order',
-        transferMoney: 'Out'
-    }
-];
+const data=[];
 
   const [coupons, setCoupons] = useState([
     { id: 1, status: 'Active', couponName: 'FsRIEpwpsLS', couponType: 'Discount', discounValue: '10%', expiry: '02/11/2023, 11:59 PM' },
@@ -93,7 +26,7 @@ export default function WalletAndCoupons() {
                 <img src={WalletIcon} alt="Wallet Icon" />
                 <p className='text-[16px] font-[500] leading-[20px]'>Wallet Balance</p>
             </div>
-                <h1 className='text-[40px] font-[700]'>Rs. {'240.65'}</h1>
+                <h1 className='text-[40px] font-[700]'>Rs. {'0.00'}</h1>
           </div>
       </div>
       <div>
@@ -126,6 +59,11 @@ export default function WalletAndCoupons() {
                             <p className='flex-1 text-left'>{item.type}</p>
                         </div>
                     )})}
+                    {!data.length && (
+                        <div className='text-center text-[#64748B] text-[14px] font-[500] leading-[17.5px] italic bg-[#CBD5E1]/30 px-[48px] py-[24px] border-y-2 border-[#E2E8F0]'>
+                            No transaction history
+                        </div>
+                    )}
             </div>
         </div>
       </div>
