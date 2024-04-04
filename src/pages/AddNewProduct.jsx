@@ -23,6 +23,7 @@ import { Button } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import {toast} from "react-toastify";
 import LoaderOverlay from "../components/loadinOverlay";
+import uploadImageToS3WithReactS3 from "../context/uploadFileViaReactS3";
 
 const GET_CATEGORIES = gql`
 query{getCategories{
@@ -88,6 +89,7 @@ console.log(productData,'productData')
 const [subCategory, setSubCategory] = useState(productData?.subCategory||"");
 const [healthConcernData]=useState(['respiratoryProblem','stomachProblem','bonesProblem','heartProblem','kidneyProblem']);
 const [subCategoryData]=useState(['medicine','device','essentials','overTheCounter']);
+
 // Convert health concern data into array of objects
 const formattedHealthConcernData = healthConcernData.map((item, index) => ({
   id: index,
@@ -157,7 +159,7 @@ console.log('Formatted Subcategory Data:', formattedSubCategoryData);
       input.subCategory=subCategory
       input.healthConcern=healthConcern
     }
-    console.log(categoryId,"categoryId")
+    console.log(productImages,"productImages")
     if(!input?.productName || !categoryId|| !input?.origin|| !input?.storage|| !input?.composition){
       toast.error("Please fill all the required fields")
       return
@@ -286,32 +288,18 @@ console.log('Formatted Subcategory Data:', formattedSubCategoryData);
       )
     : stockData;
 
-  const handleFileUpload = async (file) => {
-    setLoading(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const response = await fetch(
-        "https://api.mymultimeds.com/api/file/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-      if (!response.ok) {
-        throw new Error(`Failed to upload file: ${response.statusText}`);
+    const handleFileUpload = async (file) => {
+      setLoading(true);
+      try {
+        const uploadedUrl = await uploadImageToS3WithReactS3(file);
+        console.log(uploadedUrl, "uploaded url");
+        setProductImages((prevImages) => [...prevImages, uploadedUrl]);
+      } catch (error) {
+        console.error("Error uploading file:", error.message);
+      } finally {
+        setLoading(false);
       }
-      const responseData = await response.json();
-      const uploadedUrl = responseData.publicUrl;
-      console.log(uploadedUrl, "uploaded url");
-      setProductImages((prevImages) => [...prevImages, uploadedUrl]);
-    } catch (error) {
-      console.error("Error uploading file:", error.message);
-    }finally{
-      setLoading(false)
-    }
-  };
-
+    };
   const removeProductImage = (image) => {
     setProductImages((prevImages) => prevImages.filter((img) => img !== image));
   };

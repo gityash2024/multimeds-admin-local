@@ -6,6 +6,7 @@ import deleteIcon from '../assets/deleteDark.svg';
 import { toast } from 'react-toastify';
 import { UPDATE_BANNER } from '../context/mutation';
 import LoaderOverlay from './loadinOverlay';
+import uploadImageToS3WithReactS3 from '../context/uploadFileViaReactS3';
 
 export const CREATE_BANNER = gql`
   mutation createBanner($url: String!, $mobileUrl: String!, $index: Int!) {
@@ -32,39 +33,21 @@ export default function CreateBannerModal({ setOpenCreateBannerModal, refetchBan
   const [createBanner] = useMutation(CREATE_BANNER);
   const [updateBanner] = useMutation(UPDATE_BANNER);
 const[loading,setLoading]=useState(false)
-const handleFileUpload = async (file) => {
-  // Check the file resolution before proceeding
-  const isResolutionValid = await checkImageResolution(file, 1920, 1080);
-  if (!isResolutionValid) {
-    toast.info('Please upload a file with a minimum resolution of 1920x1080.');
-    return; // Stop the function if resolution is not sufficient
-  }
 
-  // If resolution is valid, proceed with the file upload
+const handleFileUpload = async (file) => {
   setLoading(true);
   try {
-    const formData = new FormData();
-    formData.append('file', file);
-    const response = await fetch('https://api.mymultimeds.com/api/file/upload', {
-      method: 'POST',
-      body: formData,
-    });
-    if (!response.ok) {
-      throw new Error('File Too Large');
-    }
-    const responseData = await response.json();
-    const uploadedUrl = responseData.publicUrl;
+    const uploadedUrl = await uploadImageToS3WithReactS3(file);
+    console.log(uploadedUrl, "uploaded url");
     setUrl(uploadedUrl);
     setMobileUrl(uploadedUrl);
     setIsSavingDisabled(false);
   } catch (error) {
-    toast.error('Error: File Too Large');
-    console.error('Error uploading file:', error.message);
+    console.error("Error uploading file:", error.message);
   } finally {
     setLoading(false);
   }
 };
-
 const checkImageResolution = (file, minWidth, minHeight) => {
   return new Promise((resolve) => {
     const img = new Image();
